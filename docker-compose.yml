@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  # Laravel Web Server
+  loker-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      # These env variables can be set in Easypanel's Environment tab
+      - APP_NAME=LokerMerahPutih
+      - APP_ENV=production
+      - APP_KEY=${APP_KEY}
+      - APP_DEBUG=false
+      - APP_URL=${APP_URL}
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres-db
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - HERMES_URL=http://hermes-agent:8000
+      - HERMES_WEBHOOK_TOKEN=${HERMES_WEBHOOK_TOKEN:-super-secret-hermes-token-123}
+    depends_on:
+      - postgres-db
+
+  # Python Hermes Agent
+  hermes-agent:
+    build:
+      context: ./hermes-agent
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      - LARAVEL_API_URL=http://loker-web:80/api
+      - HERMES_WEBHOOK_TOKEN=${HERMES_WEBHOOK_TOKEN:-super-secret-hermes-token-123}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-3.5-flash}
+      - SCRAPE_INTERVAL_MINUTES=30
+    depends_on:
+      - loker-web
+
+  # Database
+  postgres-db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${DB_DATABASE}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - pgsql_data:/var/lib/postgresql/data
+
+volumes:
+  pgsql_data:
