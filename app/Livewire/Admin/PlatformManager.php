@@ -3,8 +3,10 @@
 namespace App\Livewire\Admin;
 
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 use App\Models\Platform;
 
+#[Layout('layouts.app')]
 class PlatformManager extends Component
 {
     public $platforms;

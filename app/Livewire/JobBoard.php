@@ -3,9 +3,11 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 use App\Models\JobListing;
 use App\Models\Platform;
 
+#[Layout('layouts.app')]
 class JobBoard extends Component
 {
     public $platforms;
