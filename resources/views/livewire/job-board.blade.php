@@ -1,7 +1,7 @@
 <div x-data="{ searchFocused: false, searchVal: @entangle('searchQuery') }" x-init="$watch('searchVal', val => { if(val) searchFocused = true; })" class="min-h-screen bg-gray-50 flex flex-col font-sans" wire:poll.15s="checkForNewJobs">
     
     <!-- Global Fullscreen Loader -->
-    <div wire:loading wire:target="locationFilter, dateFilter, searchQuery, selectPlatform, toggleSavedFilter, selectJob, showNewJobs" class="fixed inset-0 z-[100] bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center transition-all duration-300">
+    <div wire:loading.flex wire:target="locationFilter, dateFilter, searchQuery, selectPlatform, toggleSavedFilter, selectJob, showNewJobs" class="fixed inset-0 z-[100] bg-white/80 backdrop-blur-sm flex-col items-center justify-center transition-all duration-300">
         <div class="flex flex-col items-center justify-center gap-4">
             <div class="relative w-16 h-16 flex items-center justify-center">
                 <div class="absolute inset-0 bg-red-500 rounded-2xl opacity-20 animate-ping" style="animation-duration: 1.5s;"></div>
