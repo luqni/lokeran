@@ -74,14 +74,14 @@ class HermesScraper:
                     viewport={"width": 1280, "height": 800}
                 )
                 page = context.new_page()
-                page.goto(url, wait_until="networkidle", timeout=45000)
+                page.goto(url, wait_until="domcontentloaded", timeout=45000)
                 
                 # Sleep briefly to allow dynamic content render
                 page.wait_for_timeout(3000)
                 
                 # Scroll down slightly to trigger lazy-loaded images/scripts
                 page.evaluate("window.scrollBy(0, 500)")
-                page.wait_for_timeout(1000)
+                page.wait_for_timeout(2000)
                 
                 content = page.content()
                 browser.close()
