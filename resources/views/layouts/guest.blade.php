@@ -14,13 +14,13 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased bg-gradient-to-br from-slate-50 via-indigo-50/30 to-indigo-50/80 min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <body class="font-sans text-gray-900 antialiased bg-gradient-to-br from-slate-50 via-red-50/30 to-red-50/80 min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div class="sm:mx-auto sm:w-full sm:max-w-md flex flex-col items-center">
             <a href="/" wire:navigate class="flex items-center gap-3 group transition-transform transform hover:scale-[1.02]">
-                <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-indigo-600/20 group-hover:bg-indigo-700 transition-colors">
+                <div class="w-12 h-12 bg-red-600 rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-red-600/20 group-hover:bg-red-700 transition-colors">
                     IL
                 </div>
-                <span class="text-2xl font-extrabold text-gray-900 tracking-tight">Info Loker</span>
+                <span class="text-2xl font-extrabold text-gray-900 tracking-tight">Loker Merah Putih</span>
             </a>
         </div>
 
