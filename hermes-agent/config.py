@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     HERMES_WEBHOOK_TOKEN: str = os.getenv("HERMES_WEBHOOK_TOKEN", "super-secret-hermes-token-123")
     SCRAPE_INTERVAL_MINUTES: int = int(os.getenv("SCRAPE_INTERVAL_MINUTES", "30"))
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemma-2-27b-it")
 
     class Config:
         env_file = ".env"

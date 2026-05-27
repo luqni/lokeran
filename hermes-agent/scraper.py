@@ -102,7 +102,7 @@ class HermesScraper:
         return unique_urls
 
     def extract_job_details_with_ai(self, raw_text: str) -> dict:
-        """Leverages Gemini API via OpenAI-compatible endpoints to parse unstructured text into highly clean JSON data."""
+        """Leverages Gemini/Gemma API via OpenAI-compatible endpoints to parse unstructured text into highly clean JSON data."""
         if not settings.GEMINI_API_KEY:
             logger.warning("No GEMINI_API_KEY set. Falling back to dummy mock data.")
             return self._mock_fallback(raw_text, "Gemini Key Missing")
@@ -112,6 +112,9 @@ class HermesScraper:
             "Authorization": f"Bearer {settings.GEMINI_API_KEY}",
             "Content-Type": "application/json"
         }
+
+        model_name = settings.GEMINI_MODEL
+        is_gemma = "gemma" in model_name.lower()
 
         prompt = (
             "Extract the following job posting into a valid JSON object with EXACTLY these keys: "
@@ -123,23 +126,39 @@ class HermesScraper:
         )
 
         payload = {
-            "model": "gemini-3.1-flash-lite",
-            "response_format": {"type": "json_object"},
+            "model": model_name,
             "messages": [
                 {"role": "system", "content": "You are a JSON job data extractor. You must only output a valid JSON object."},
                 {"role": "user", "content": f"{prompt}\n\nRaw Text:\n{raw_text[:4000]}"}
             ]
         }
 
+        # Only add response_format if it is NOT a gemma model (to avoid compatibility issues)
+        if not is_gemma:
+            payload["response_format"] = {"type": "json_object"}
+
         try:
             response = self.client.post(url, json=payload, headers=headers, timeout=20.0)
             if response.status_code == 200:
                 data = response.json()
                 content = data['choices'][0]['message']['content']
-                # Strip markdown code blocks just in case
-                content = re.sub(r'```json\s*', '', content)
-                content = re.sub(r'```\s*', '', content)
-                return json.loads(content)
+                
+                # Robust extraction of json object from response content (especially helpful for Gemma)
+                # Search for any ```json ... ``` blocks
+                json_match = re.search(r'```json\s*(.*?)\s*```', content, re.DOTALL)
+                if json_match:
+                    content_str = json_match.group(1)
+                else:
+                    # Strip any generic markdown code blocks
+                    content_str = re.sub(r'```\s*', '', content)
+                
+                # Find the first '{' and the last '}' to isolate pure JSON
+                first_brace = content_str.find('{')
+                last_brace = content_str.rfind('}')
+                if first_brace != -1 and last_brace != -1:
+                    content_str = content_str[first_brace:last_brace+1]
+                
+                return json.loads(content_str)
             else:
                 logger.error(f"Gemini API returned status {response.status_code}: {response.text}")
                 return self._mock_fallback(raw_text, f"Gemini HTTP Status {response.status_code}")
