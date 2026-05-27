@@ -44,11 +44,21 @@ class JobWebhookController extends Controller
             return response()->json(['message' => 'Platform not found'], 422);
         }
 
-        // 4. Duplicate prevention (source URL basis)
-        $existingJob = JobListing::where('source_url', $validated['source_url'])->first();
+        // 4. Duplicate prevention (source URL basis OR identical title & company)
+        $existingJob = JobListing::where('source_url', $validated['source_url'])
+            ->orWhere(function($query) use ($validated) {
+                $query->where('job_title', $validated['job_title']);
+                if (isset($validated['company_name'])) {
+                    $query->where('company_name', $validated['company_name']);
+                } else {
+                    $query->whereNull('company_name');
+                }
+            })->first();
+
         if ($existingJob) {
-            Log::info('Hermes API Webhook: Job already exists, skipping.', [
-                'source_url' => $validated['source_url'],
+            Log::info('Hermes API Webhook: Job already exists (duplicate detected), skipping.', [
+                'job_title' => $validated['job_title'],
+                'company' => $validated['company_name'] ?? 'Confidential',
                 'job_id' => $existingJob->id
             ]);
             return response()->json([
