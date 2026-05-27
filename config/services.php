@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'hermes' => [
+        'webhook_token' => env('HERMES_WEBHOOK_TOKEN', 'super-secret-hermes-token-123'),
+    ],
+
 ];

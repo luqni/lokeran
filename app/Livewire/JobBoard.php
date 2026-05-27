@@ -222,9 +222,22 @@ class JobBoard extends Component
                 }
             })->count();
 
+        // Read status from Cache
+        $hermesStatus = \Illuminate\Support\Facades\Cache::get('hermes_status');
+        $hermesOnline = false;
+
+        if ($hermesStatus && isset($hermesStatus['last_seen'])) {
+            // Online if last heartbeat is within 6 minutes (360 seconds)
+            if (now()->timestamp - $hermesStatus['last_seen'] < 360) {
+                $hermesOnline = true;
+            }
+        }
+
         return view('livewire.job-board', [
             'jobs' => $jobs,
-            'totalJobs' => $totalJobs
+            'totalJobs' => $totalJobs,
+            'hermesOnline' => $hermesOnline,
+            'hermesStatus' => $hermesStatus
         ])->layout('layouts.app');
     }
 }

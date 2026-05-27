@@ -9,6 +9,21 @@
                         MP
                     </div>
                     <h1 class="text-xl font-bold text-gray-900 tracking-tight">Loker Merah Putih</h1>
+                    
+                    <!-- Hermes Status Indicator -->
+                    <div class="flex items-center gap-1.5 ml-1 sm:ml-2 bg-gray-50 border border-gray-100 rounded-full px-2 py-0.5 transition-all duration-300" title="{{ $hermesOnline ? 'Hermes Agent: Online' : 'Hermes Agent: Offline' }}">
+                        <span class="relative flex h-2 w-2">
+                            @if($hermesOnline)
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                            @else
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                            @endif
+                        </span>
+                        <span class="text-[9px] font-extrabold tracking-wider uppercase {{ $hermesOnline ? 'text-green-600' : 'text-red-500' }}">
+                            Hermes
+                        </span>
+                    </div>
                 </div>
                 <!-- Mobile Notification Bell -->
                 <button class="lg:hidden relative p-2 text-gray-400 hover:text-gray-500 transition-colors">
