@@ -182,7 +182,7 @@
                 @endforelse
             </div>
             
-            <div class="mt-6 flex justify-center">
+            <div class="mt-6 flex justify-center pb-8">
                 @if(count($jobs) >= $perPage && count($jobs) < $totalJobs)
                     <div x-intersect="$wire.loadMore()" class="py-4 flex justify-center w-full">
                         <div class="animate-pulse flex items-center gap-2 text-red-600 font-medium">
@@ -192,6 +192,14 @@
                             </svg>
                             Loading more...
                         </div>
+                    </div>
+                @elseif(count($jobs) > 0 && count($jobs) >= $totalJobs)
+                    <div class="py-8 flex flex-col items-center justify-center w-full text-center">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3 text-gray-400">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <h4 class="text-sm font-bold text-gray-900">Itu saja untuk saat ini!</h4>
+                        <p class="text-xs text-gray-500 mt-1">Anda sudah melihat semua lowongan yang tersedia.</p>
                     </div>
                 @endif
             </div>
