@@ -15,6 +15,7 @@ class PlatformManager extends Component
     
     public function mount()
     {
+        abort_if(!auth()->user()->isAdmin(), 403, 'Anda tidak memiliki akses ke halaman ini.');
         $this->loadPlatforms();
     }
 

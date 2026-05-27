@@ -36,6 +36,11 @@ new class extends Component
                     <x-nav-link :href="route('home')" :active="request()->routeIs('home')" wire:navigate>
                         {{ __('Home') }}
                     </x-nav-link>
+                    @if(auth()->check() && auth()->user()->isAdmin())
+                    <x-nav-link :href="route('admin.platforms')" :active="request()->routeIs('admin.platforms')" wire:navigate>
+                        {{ __('Platforms') }}
+                    </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -87,6 +92,11 @@ new class extends Component
             <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')" wire:navigate>
                 {{ __('Home') }}
             </x-responsive-nav-link>
+            @if(auth()->check() && auth()->user()->isAdmin())
+            <x-responsive-nav-link :href="route('admin.platforms')" :active="request()->routeIs('admin.platforms')" wire:navigate>
+                {{ __('Platforms') }}
+            </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

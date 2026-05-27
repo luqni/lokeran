@@ -34,4 +34,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(JobListing::class, 'saved_jobs', 'user_id', 'job_listing_id')->withTimestamps();
     }
+
+    public function isAdmin(): bool
+    {
+        return (bool) $this->is_admin;
+    }
 }

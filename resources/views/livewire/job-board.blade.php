@@ -351,7 +351,7 @@
             <svg class="w-6 h-6 mb-1 transition-colors {{ $showSavedOnly ? 'text-red-600 fill-red-600' : 'text-gray-500 group-hover:text-red-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
             <span class="text-[10px] font-medium transition-colors {{ $showSavedOnly ? 'text-red-600' : 'text-gray-500 group-hover:text-red-600' }}">Saved</span>
         </button>
-        <a href="{{ route('admin.platforms') }}" class="flex flex-col items-center justify-center w-full group">
+        <a href="{{ route('profile') }}" class="flex flex-col items-center justify-center w-full group">
             <svg class="w-6 h-6 mb-1 text-gray-500 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
             <span class="text-[10px] font-medium text-gray-500 group-hover:text-red-600 transition-colors">Profile</span>
         </a>
