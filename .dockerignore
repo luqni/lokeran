@@ -23,5 +23,3 @@ tests
 .gitattributes
 .gitignore
 .npmrc
-package-lock.json
-composer.lock
