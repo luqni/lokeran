@@ -13,7 +13,7 @@ class JobBoard extends Component
     public $platforms;
     public $selectedPlatform = null;
     public $searchQuery = '';
-    public $locationFilter = 'Indonesia';
+    public $locationFilter = 'All';
     public $dateFilter = 'All';
     public $selectedJob = null;
     public $perPage = 10;
