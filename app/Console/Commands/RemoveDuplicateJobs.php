@@ -17,34 +17,32 @@ class RemoveDuplicateJobs extends Command
      */
     public function handle()
     {
-        $this->info('Memulai pencarian data duplikat...');
+        $this->info('Memulai pencarian data duplikat berdasarkan Base URL...');
 
-        // Cari job yang duplikat berdasarkan judul dan nama perusahaan
-        $duplicates = JobListing::select('job_title', 'company_name', DB::raw('COUNT(*) as count'))
-            ->groupBy('job_title', 'company_name')
-            ->havingRaw('COUNT(*) > 1')
-            ->get();
-
-        if ($duplicates->isEmpty()) {
-            $this->info('Tidak ada data duplikat yang ditemukan.');
-            return;
-        }
-
+        // Ambil semua data dari yang paling baru
+        $allJobs = JobListing::orderBy('created_at', 'desc')->get();
+        
+        $seenUrls = [];
         $totalDeleted = 0;
 
-        foreach ($duplicates as $duplicate) {
-            // Ambil semua job yang sama persis, urutkan dari yang terbaru
-            $jobs = JobListing::where('job_title', $duplicate->job_title)
-                ->where('company_name', $duplicate->company_name)
-                ->orderBy('created_at', 'desc')
-                ->get();
+        foreach ($allJobs as $job) {
+            // Bersihkan URL dari parameter tracking (?refId=..., dll)
+            $baseUrl = explode('?', $job->source_url)[0];
 
-            // Pertahankan yang paling baru (index 0), hapus sisanya
-            $jobsToDelete = $jobs->slice(1);
-            
-            foreach ($jobsToDelete as $job) {
+            if (in_array($baseUrl, $seenUrls)) {
+                // Jika URL dasar ini sudah pernah kita temukan sebelumnya (yang mana lebih baru),
+                // maka job ini adalah duplikat versi lamanya. Hapus!
                 $job->delete();
                 $totalDeleted++;
+            } else {
+                // Tandai URL ini sudah dilihat (ini adalah versi terbaru karena orderBy desc)
+                $seenUrls[] = $baseUrl;
+                
+                // Jika URL di database masih ada query string-nya, kita bersihkan sekalian
+                if ($job->source_url !== $baseUrl) {
+                    $job->source_url = $baseUrl;
+                    $job->save();
+                }
             }
         }
 

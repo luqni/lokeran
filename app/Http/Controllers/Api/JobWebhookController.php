@@ -44,8 +44,11 @@ class JobWebhookController extends Controller
             return response()->json(['message' => 'Platform not found'], 422);
         }
 
+        // 3.5 Normalize source URL (Remove tracking parameters like ?refId=...)
+        $cleanSourceUrl = explode('?', $validated['source_url'])[0];
+
         // 4. Duplicate prevention (source URL basis OR identical title & company)
-        $existingJob = JobListing::where('source_url', $validated['source_url'])
+        $existingJob = JobListing::where('source_url', 'LIKE', $cleanSourceUrl . '%')
             ->orWhere(function($query) use ($validated) {
                 $query->where('job_title', $validated['job_title']);
                 if (isset($validated['company_name'])) {
@@ -75,7 +78,7 @@ class JobWebhookController extends Controller
                 'company_name' => $validated['company_name'] ?? 'Confidential',
                 'company_logo' => $validated['company_logo'],
                 'requirements' => $validated['requirements'] ? json_encode($validated['requirements']) : null,
-                'source_url' => $validated['source_url'],
+                'source_url' => $cleanSourceUrl,
                 'location' => $validated['location'] ?? 'Indonesia',
             ]);
 
