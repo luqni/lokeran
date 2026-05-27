@@ -78,29 +78,8 @@ class JobBoard extends Component
             return;
         }
 
-        $this->newJobsCount = JobListing::where('id', '>', $this->initialLatestJobId)
-            ->when($this->selectedPlatform, function ($query) {
-                $query->where('platform_id', $this->selectedPlatform);
-            })
-            ->when($this->searchQuery, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('job_title', 'like', '%' . $this->searchQuery . '%')
-                      ->orWhere('company_name', 'like', '%' . $this->searchQuery . '%');
-                });
-            })
-            ->when($this->locationFilter !== 'All', function ($query) {
-                $query->where('location', $this->locationFilter);
-            })
-            ->when($this->dateFilter !== 'All', function ($query) {
-                if ($this->dateFilter === 'Past 24 Hours') {
-                    $query->where('created_at', '>=', now()->subDay());
-                } elseif ($this->dateFilter === 'Past Week') {
-                    $query->where('created_at', '>=', now()->subWeek());
-                } elseif ($this->dateFilter === 'Past Month') {
-                    $query->where('created_at', '>=', now()->subMonth());
-                }
-            })
-            ->count();
+        // Count ALL new jobs regardless of currently active filters
+        $this->newJobsCount = JobListing::where('id', '>', $this->initialLatestJobId)->count();
     }
 
     public function showNewJobs()
