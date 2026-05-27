@@ -6,9 +6,9 @@
             <div class="flex items-center justify-between w-full lg:w-auto">
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
-                        IL
+                        MP
                     </div>
-                    <h1 class="text-xl font-bold text-gray-900 tracking-tight">Info Loker</h1>
+                    <h1 class="text-xl font-bold text-gray-900 tracking-tight">Loker Merah Putih</h1>
                 </div>
                 <!-- Mobile Notification Bell -->
                 <button class="lg:hidden relative p-2 text-gray-400 hover:text-gray-500 transition-colors">
