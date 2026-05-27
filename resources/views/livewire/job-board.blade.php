@@ -56,6 +56,13 @@
                     </select>
                 </div>
                 
+                <!-- Desktop Saved Filter -->
+                <button wire:click="toggleSavedFilter" class="hidden lg:block relative p-2 transition-colors {{ $showSavedOnly ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-500' }}" title="Saved Jobs">
+                    <svg class="w-6 h-6 {{ $showSavedOnly ? 'fill-indigo-600 text-indigo-600' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                    </svg>
+                </button>
+
                 <!-- Desktop Notification Bell -->
                 <button class="hidden lg:block relative p-2 text-gray-400 hover:text-gray-500 transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
@@ -113,8 +120,15 @@
                                     <p class="text-gray-500 mt-1 font-medium">{{ $job->company_name ?? 'Confidential Company' }}</p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-2 text-xs font-medium text-gray-400 bg-gray-50 px-2.5 py-1 rounded-lg">
-                                <span>{{ $job->created_at->diffForHumans() }}</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-medium text-gray-400 bg-gray-50 px-2.5 py-1 rounded-lg">
+                                    {{ $job->created_at->diffForHumans() }}
+                                </span>
+                                <button wire:click.stop="toggleSaveJob({{ $job->id }})" class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-indigo-600 transition-colors" title="Simpan Lowongan">
+                                    <svg class="w-5 h-5 {{ auth()->check() && $job->savedByUsers->contains(auth()->id()) ? 'fill-indigo-600 text-indigo-600' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                                    </svg>
+                                </button>
                             </div>
                         </div>
                         <div class="mt-4 flex items-center justify-between">
@@ -200,8 +214,13 @@
                         @endif
                     </div>
 
-                    <div class="mt-10 pt-6 border-t border-gray-100 space-y-4">
-                        <a href="{{ $selectedJob->source_url ?? '#' }}" target="_blank" class="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all transform hover:scale-[1.02]">
+                    <div class="mt-10 pt-6 border-t border-gray-100 flex items-center gap-3">
+                        <button wire:click="toggleSaveJob({{ $selectedJob->id }})" class="flex-shrink-0 p-3.5 rounded-xl border border-gray-200 hover:border-indigo-200 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50/20 transition-all" title="{{ auth()->check() && $selectedJob->savedByUsers->contains(auth()->id()) ? 'Hapus dari Simpanan' : 'Simpan Lowongan' }}">
+                            <svg class="w-6 h-6 {{ auth()->check() && $selectedJob->savedByUsers->contains(auth()->id()) ? 'fill-indigo-600 text-indigo-600' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                            </svg>
+                        </button>
+                        <a href="{{ $selectedJob->source_url ?? '#' }}" target="_blank" class="flex-1 flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-md text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-all transform active:scale-95">
                             Lamar Sekarang
                             <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                         </a>
@@ -274,8 +293,13 @@
                     </div>
 
                     <!-- Sticky Footer: CTA Button -->
-                    <div class="p-6 border-t border-gray-100 bg-white/95 backdrop-blur-sm pb-8 flex-shrink-0">
-                        <a href="{{ $selectedJob->source_url ?? '#' }}" target="_blank" class="w-full flex justify-center items-center gap-2 py-4 px-6 border border-transparent rounded-2xl shadow-md text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] transition-all">
+                    <div class="p-6 border-t border-gray-100 bg-white/95 backdrop-blur-sm pb-8 flex-shrink-0 flex items-center gap-3">
+                        <button wire:click="toggleSaveJob({{ $selectedJob->id }})" class="flex-shrink-0 p-4 rounded-2xl border border-gray-200 hover:border-indigo-200 text-gray-400 hover:text-indigo-600 active:scale-95 transition-all" title="{{ auth()->check() && $selectedJob->savedByUsers->contains(auth()->id()) ? 'Hapus dari Simpanan' : 'Simpan Lowongan' }}">
+                            <svg class="w-6 h-6 {{ auth()->check() && $selectedJob->savedByUsers->contains(auth()->id()) ? 'fill-indigo-600 text-indigo-600' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+                            </svg>
+                        </button>
+                        <a href="{{ $selectedJob->source_url ?? '#' }}" target="_blank" class="flex-1 flex justify-center items-center gap-2 py-4 px-6 border border-transparent rounded-2xl shadow-md text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] transition-all">
                             Lamar Sekarang
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                         </a>
@@ -287,18 +311,18 @@
     
     <!-- Mobile Bottom Navigation -->
     <div class="md:hidden fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200 flex justify-around items-center px-4 shadow-lg">
-        <a href="#" class="flex flex-col items-center justify-center w-full group">
-            <svg class="w-6 h-6 mb-1 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-            <span class="text-[10px] font-medium text-indigo-600">Home</span>
-        </a>
+        <button wire:click="$set('showSavedOnly', false)" class="flex flex-col items-center justify-center w-full group">
+            <svg class="w-6 h-6 mb-1 transition-colors {{ !$showSavedOnly ? 'text-indigo-600' : 'text-gray-500 group-hover:text-indigo-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            <span class="text-[10px] font-medium transition-colors {{ !$showSavedOnly ? 'text-indigo-600' : 'text-gray-500 group-hover:text-indigo-600' }}">Home</span>
+        </button>
         <a href="#" class="flex flex-col items-center justify-center w-full group">
             <svg class="w-6 h-6 mb-1 text-gray-500 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             <span class="text-[10px] font-medium text-gray-500 group-hover:text-indigo-600 transition-colors">Search</span>
         </a>
-        <a href="#" class="flex flex-col items-center justify-center w-full group">
-            <svg class="w-6 h-6 mb-1 text-gray-500 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
-            <span class="text-[10px] font-medium text-gray-500 group-hover:text-indigo-600 transition-colors">Saved</span>
-        </a>
+        <button wire:click="toggleSavedFilter" class="flex flex-col items-center justify-center w-full group">
+            <svg class="w-6 h-6 mb-1 transition-colors {{ $showSavedOnly ? 'text-indigo-600 fill-indigo-600' : 'text-gray-500 group-hover:text-indigo-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+            <span class="text-[10px] font-medium transition-colors {{ $showSavedOnly ? 'text-indigo-600' : 'text-gray-500 group-hover:text-indigo-600' }}">Saved</span>
+        </button>
         <a href="{{ route('admin.platforms') }}" class="flex flex-col items-center justify-center w-full group">
             <svg class="w-6 h-6 mb-1 text-gray-500 group-hover:text-indigo-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
             <span class="text-[10px] font-medium text-gray-500 group-hover:text-indigo-600 transition-colors">Profile</span>

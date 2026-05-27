@@ -15,6 +15,7 @@ class JobBoard extends Component
     public $dateFilter = 'All';
     public $selectedJob = null;
     public $perPage = 10;
+    public $showSavedOnly = false;
     
     // Dynamic Twitter-style notification properties
     public $initialLatestJobId = null;
@@ -66,6 +67,11 @@ class JobBoard extends Component
 
     public function checkForNewJobs()
     {
+        if ($this->showSavedOnly) {
+            $this->newJobsCount = 0;
+            return;
+        }
+
         if (!$this->initialLatestJobId) {
             $this->initialLatestJobId = JobListing::max('id') ?? 0;
             $this->newJobsCount = 0;
@@ -113,11 +119,53 @@ class JobBoard extends Component
         $this->selectedJob = null;
     }
 
+    public function toggleSaveJob($jobId)
+    {
+        if (auth()->guest()) {
+            return $this->redirect(route('login'), navigate: true);
+        }
+
+        $user = auth()->user();
+        if ($user->savedJobs()->where('job_listing_id', $jobId)->exists()) {
+            $user->savedJobs()->detach($jobId);
+        } else {
+            $user->savedJobs()->attach($jobId);
+        }
+
+        // Refresh selected job data if it is open so UI updates immediately
+        if ($this->selectedJob && $this->selectedJob->id == $jobId) {
+            $this->selectedJob = JobListing::with('platform')->find($jobId);
+        }
+    }
+
+    public function toggleSavedFilter()
+    {
+        if (auth()->guest()) {
+            return $this->redirect(route('login'), navigate: true);
+        }
+
+        $this->showSavedOnly = !$this->showSavedOnly;
+        
+        // Reset platform filter if showing saved to prevent empty states
+        if ($this->showSavedOnly) {
+            $this->selectedPlatform = null;
+        }
+
+        $this->perPage = 10;
+        $this->selectedJob = null;
+        $this->resetNotification();
+    }
+
     public function getJobsProperty()
     {
-        return JobListing::with('platform')
+        return JobListing::with(['platform', 'savedByUsers'])
             ->when($this->selectedPlatform, function ($query) {
                 $query->where('platform_id', $this->selectedPlatform);
+            })
+            ->when($this->showSavedOnly, function ($query) {
+                $query->whereHas('savedByUsers', function ($q) {
+                    $q->where('user_id', auth()->id());
+                });
             })
             ->when($this->searchQuery, function ($query) {
                 $query->where(function ($q) {
@@ -149,6 +197,11 @@ class JobBoard extends Component
         // Count total for infinite scroll check
         $totalJobs = JobListing::when($this->selectedPlatform, function ($query) {
                 $query->where('platform_id', $this->selectedPlatform);
+            })
+            ->when($this->showSavedOnly, function ($query) {
+                $query->whereHas('savedByUsers', function ($q) {
+                    $q->where('user_id', auth()->id());
+                });
             })
             ->when($this->searchQuery, function ($query) {
                 $query->where(function ($q) {

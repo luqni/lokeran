@@ -12,4 +12,9 @@ class JobListing extends Model
     {
         return $this->belongsTo(Platform::class);
     }
+
+    public function savedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'saved_jobs', 'job_listing_id', 'user_id')->withTimestamps();
+    }
 }
