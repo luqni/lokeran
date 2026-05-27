@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gray-50 flex flex-col font-sans" wire:poll.15s="checkForNewJobs">
+<div x-data="{ searchFocused: false, searchVal: @entangle('searchQuery') }" x-init="$watch('searchVal', val => { if(val) searchFocused = true; })" class="min-h-screen bg-gray-50 flex flex-col font-sans" wire:poll.15s="checkForNewJobs">
     
     <!-- Navbar -->
     <header class="bg-white shadow-sm sticky top-0 z-30">
@@ -34,7 +34,7 @@
             
             <div class="flex items-center gap-2 lg:gap-4 w-full lg:w-auto h-10">
                 
-                <div x-data="{ searchFocused: false, searchVal: @entangle('searchQuery') }" x-init="$watch('searchVal', val => { if(val) searchFocused = true; })" class="flex items-center gap-2 w-full lg:w-auto h-full">
+                <div class="flex items-center gap-2 w-full lg:w-auto h-full">
                     <!-- Desktop Search (Always visible, fixed width) -->
                     <div class="hidden lg:flex relative items-center w-64 h-full">
                         <svg class="w-5 h-5 text-gray-400 absolute left-3 z-10 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -347,15 +347,15 @@
     
     <!-- Mobile Bottom Navigation -->
     <div class="md:hidden fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200 flex justify-around items-center px-4 shadow-lg">
-        <button wire:click="$set('showSavedOnly', false)" class="flex flex-col items-center justify-center w-full group">
-            <svg class="w-6 h-6 mb-1 transition-colors {{ !$showSavedOnly ? 'text-red-600' : 'text-gray-500 group-hover:text-red-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-            <span class="text-[10px] font-medium transition-colors {{ !$showSavedOnly ? 'text-red-600' : 'text-gray-500 group-hover:text-red-600' }}">Home</span>
+        <button @click="searchFocused = false" wire:click="$set('showSavedOnly', false)" class="flex flex-col items-center justify-center w-full group">
+            <svg class="w-6 h-6 mb-1 transition-colors" :class="(!searchFocused && !@json($showSavedOnly)) ? 'text-red-600' : 'text-gray-500 group-hover:text-red-600'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            <span class="text-[10px] font-medium transition-colors" :class="(!searchFocused && !@json($showSavedOnly)) ? 'text-red-600' : 'text-gray-500 group-hover:text-red-600'">Home</span>
         </button>
-        <a href="#" class="flex flex-col items-center justify-center w-full group">
-            <svg class="w-6 h-6 mb-1 text-gray-500 group-hover:text-red-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            <span class="text-[10px] font-medium text-gray-500 group-hover:text-red-600 transition-colors">Search</span>
-        </a>
-        <button wire:click="toggleSavedFilter" class="flex flex-col items-center justify-center w-full group">
+        <button type="button" @click="searchFocused = true; window.scrollTo({top: 0, behavior: 'smooth'}); setTimeout(() => $refs.searchInput.focus(), 100)" class="flex flex-col items-center justify-center w-full group">
+            <svg class="w-6 h-6 mb-1 transition-colors" :class="searchFocused ? 'text-red-600' : 'text-gray-500 group-hover:text-red-600'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <span class="text-[10px] font-medium transition-colors" :class="searchFocused ? 'text-red-600' : 'text-gray-500 group-hover:text-red-600'">Search</span>
+        </button>
+        <button @click="searchFocused = false" wire:click="toggleSavedFilter" class="flex flex-col items-center justify-center w-full group">
             <svg class="w-6 h-6 mb-1 transition-colors {{ $showSavedOnly ? 'text-red-600 fill-red-600' : 'text-gray-500 group-hover:text-red-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
             <span class="text-[10px] font-medium transition-colors {{ $showSavedOnly ? 'text-red-600' : 'text-gray-500 group-hover:text-red-600' }}">Saved</span>
         </button>
