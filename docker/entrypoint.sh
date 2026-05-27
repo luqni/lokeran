@@ -15,6 +15,9 @@ php artisan livewire:publish --assets --ansi --no-interaction
 if [ "$RUN_MIGRATIONS" = "true" ] || [ "$NODE_ENV" = "production" ] || [ "$APP_ENV" = "production" ]; then
     echo "Running database migrations..."
     php artisan migrate --force --no-interaction
+    
+    echo "Cleaning up duplicate job listings..."
+    php artisan jobs:remove-duplicates
 fi
 
 # Execute CMD passed to docker container
