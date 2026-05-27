@@ -43,6 +43,10 @@ RUN apk add --no-cache \
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions gd bcmath zip pdo_mysql pdo_pgsql opcache redis
 
+# Configure PHP-FPM to run as the nginx user
+RUN sed -i 's/user = www-data/user = nginx/g' /usr/local/etc/php-fpm.d/www.conf && \
+    sed -i 's/group = www-data/group = nginx/g' /usr/local/etc/php-fpm.d/www.conf
+
 # Copy configurations
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
