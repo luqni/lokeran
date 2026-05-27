@@ -258,11 +258,11 @@
                     
                     <!-- Header: Unified Logo and Job Title -->
                     <div class="px-6 pb-4 flex items-start justify-between gap-4 border-b border-gray-50">
-                        <div class="flex gap-4 items-center flex-1">
+                        <div class="flex gap-4 items-center flex-1 min-w-0">
                             <img src="{{ $selectedJob->company_logo ?? 'https://ui-avatars.com/api/?name=' . urlencode($selectedJob->company_name ?? 'Confidential') . '&color=4f46e5&background=e0e7ff&size=64&bold=true' }}" class="w-12 h-12 rounded-2xl object-cover border border-gray-100 shadow-sm flex-shrink-0" alt="{{ $selectedJob->company_name }}">
                             <div class="min-w-0 flex-1">
                                 <h2 class="text-lg font-bold text-gray-900 leading-snug line-clamp-1">{{ $selectedJob->job_title }}</h2>
-                                <div class="flex items-center gap-2 mt-0.5">
+                                <div class="flex items-center gap-2 mt-0.5 min-w-0">
                                     <p class="text-sm text-red-600 font-semibold truncate flex-1 min-w-0">{{ $selectedJob->company_name ?? 'Confidential' }}</p>
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-100 flex-shrink-0">
                                         {{ $selectedJob->platform->name }}
