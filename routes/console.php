@@ -11,3 +11,6 @@ Artisan::command('inspire', function () {
 
 // Jadwalkan scraper untuk berjalan otomatis
 Schedule::job(new ScrapeSocialMediaJob)->everyFiveMinutes();
+
+// Jadwalkan pembersihan data duplikat setiap hari (tengah malam)
+Schedule::command('jobs:remove-duplicates')->daily();
