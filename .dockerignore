@@ -1,0 +1,27 @@
+# Directories to ignore
+.git
+node_modules
+vendor
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+bootstrap/cache/*
+
+# Files to ignore
+.env
+.env.backup
+.env.production
+docker-compose.yml
+Dockerfile
+Dockerfile.*
+.dockerignore
+README.md
+phpunit.xml
+tests
+.editorconfig
+.gitattributes
+.gitignore
+.npmrc
+package-lock.json
+composer.lock
