@@ -17,7 +17,9 @@
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
             @auth
-                <livewire:layout.navigation />
+                @if(!request()->routeIs('home'))
+                    <livewire:layout.navigation />
+                @endif
             @endauth
 
             <!-- Page Heading -->
