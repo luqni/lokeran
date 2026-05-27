@@ -263,7 +263,7 @@
                             <div class="min-w-0 flex-1">
                                 <h2 class="text-lg font-bold text-gray-900 leading-snug line-clamp-1">{{ $selectedJob->job_title }}</h2>
                                 <div class="flex items-center gap-2 mt-0.5">
-                                    <p class="text-sm text-red-600 font-semibold truncate">{{ $selectedJob->company_name ?? 'Confidential' }}</p>
+                                    <p class="text-sm text-red-600 font-semibold truncate flex-1 min-w-0">{{ $selectedJob->company_name ?? 'Confidential' }}</p>
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 border border-red-100 flex-shrink-0">
                                         {{ $selectedJob->platform->name }}
                                     </span>
