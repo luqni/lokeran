@@ -24,11 +24,6 @@ class ScrapeSocialMediaJob implements ShouldQueue
     {
         $platformNames = [
             'LinkedIn',
-            'JobStreet',
-            'Indeed',
-            'Karir.com',
-            'Loker.id',
-            'Karirhub Kemnaker'
         ];
 
         // Round-robin selection using cache
