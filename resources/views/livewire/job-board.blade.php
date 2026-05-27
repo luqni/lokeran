@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gray-50 flex flex-col font-sans overflow-x-hidden" wire:poll.15s="checkForNewJobs">
+<div class="min-h-screen bg-gray-50 flex flex-col font-sans" wire:poll.15s="checkForNewJobs">
     
     <!-- Navbar -->
     <header class="bg-white shadow-sm sticky top-0 z-30">
@@ -75,15 +75,15 @@
         <div class="border-t border-gray-100 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
                 <div class="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
-                    <button wire:click="selectPlatform(null)" class="whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all {{ $selectedPlatform === null ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
+                    <button wire:click="selectPlatform(null)" class="flex-shrink-0 whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-medium transition-all {{ $selectedPlatform === null ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
                         All Platforms
                     </button>
                     @foreach($platforms as $platform)
-                        <button wire:click="selectPlatform({{ $platform->id }})" class="whitespace-nowrap flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all {{ $selectedPlatform === $platform->id ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
+                        <button wire:click="selectPlatform({{ $platform->id }})" class="flex-shrink-0 whitespace-nowrap flex items-center gap-3 px-5 py-2.5 rounded-full text-sm font-medium transition-all {{ $selectedPlatform === $platform->id ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
                             @if($platform->icon_path)
-                                <img src="{{ $platform->icon_path }}" class="w-4 h-4" alt="{{ $platform->name }}">
+                                <img src="{{ $platform->icon_path }}" class="w-5 h-5 rounded-md object-cover flex-shrink-0" alt="{{ $platform->name }}">
                             @endif
-                            {{ $platform->name }}
+                            <span>{{ $platform->name }}</span>
                         </button>
                     @endforeach
                 </div>
