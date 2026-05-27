@@ -86,6 +86,12 @@ class JobBoard extends Component
 
     public function showNewJobs()
     {
+        $this->searchQuery = '';
+        $this->locationFilter = 'All';
+        $this->dateFilter = 'All';
+        $this->selectedPlatform = null;
+        $this->showSavedOnly = false;
+        
         $this->resetNotification();
         $this->perPage = 10; // reset listing limit to show newest immediately
     }
