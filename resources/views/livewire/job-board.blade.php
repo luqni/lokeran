@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gray-50 flex flex-col font-sans overflow-x-hidden">
+<div class="min-h-screen bg-gray-50 flex flex-col font-sans overflow-x-hidden" wire:poll.15s="checkForNewJobs">
     
     <!-- Navbar -->
     <header class="bg-white shadow-sm sticky top-0 z-30">
@@ -84,6 +84,18 @@
                     </button>
                 @endforeach
             </div>
+
+            <!-- Dynamic Notification Pill (Twitter style) -->
+            @if($newJobsCount > 0)
+                <div class="flex justify-center mb-6 sticky top-20 z-20 animate-fade-in-up">
+                    <button wire:click="showNewJobs" class="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg font-extrabold text-xs sm:text-sm transition-all transform hover:scale-[1.03] active:scale-95 border border-indigo-500/20 backdrop-blur-md bg-opacity-95">
+                        <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                        </svg>
+                        <span>Lihat {{ $newJobsCount }} lowongan baru</span>
+                    </button>
+                </div>
+            @endif
 
             <!-- Job Cards -->
             <div class="space-y-4">
