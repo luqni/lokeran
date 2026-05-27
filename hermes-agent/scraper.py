@@ -102,20 +102,21 @@ class HermesScraper:
         return unique_urls
 
     def extract_job_details_with_ai(self, raw_text: str) -> dict:
-        """Leverages Gemini/Gemma API via OpenAI-compatible endpoints to parse unstructured text into highly clean JSON data."""
+        """Leverages Gemini API natively to parse unstructured text into highly clean JSON data."""
         if not settings.GEMINI_API_KEY:
             logger.warning("No GEMINI_API_KEY set. Falling back to dummy mock data.")
             return self._mock_fallback(raw_text, "Gemini Key Missing")
 
-        url = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+        model_name = settings.GEMINI_MODEL
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={settings.GEMINI_API_KEY}"
+        
         headers = {
-            "Authorization": f"Bearer {settings.GEMINI_API_KEY}",
             "Content-Type": "application/json"
         }
 
-        model_name = settings.GEMINI_MODEL
         is_gemma = "gemma" in model_name.lower()
 
+        system_instruction = "You are a JSON job data extractor. You must only output a valid JSON object."
         prompt = (
             "Extract the following job posting into a valid JSON object with EXACTLY these keys: "
             "\"job_title\" (string), \"company_name\" (string, use null if not found), "
@@ -124,24 +125,28 @@ class HermesScraper:
             "\"location\" (string, extract city or country, default to Indonesia if not specified). "
             "DO NOT return any markdown formatting, only pure JSON string."
         )
+        
+        full_prompt = f"{system_instruction}\n\n{prompt}\n\nRaw Text:\n{raw_text[:4000]}"
 
         payload = {
-            "model": model_name,
-            "messages": [
-                {"role": "system", "content": "You are a JSON job data extractor. You must only output a valid JSON object."},
-                {"role": "user", "content": f"{prompt}\n\nRaw Text:\n{raw_text[:4000]}"}
-            ]
+            "contents": [{
+                "parts": [{"text": full_prompt}]
+            }]
         }
 
-        # Only add response_format if it is NOT a gemma model (to avoid compatibility issues)
+        # Enable native JSON mode for Gemini models
         if not is_gemma:
-            payload["response_format"] = {"type": "json_object"}
+            payload["generationConfig"] = {
+                "responseMimeType": "application/json"
+            }
 
         try:
             response = self.client.post(url, json=payload, headers=headers, timeout=20.0)
             if response.status_code == 200:
                 data = response.json()
-                content = data['choices'][0]['message']['content']
+                
+                # Gemini native API response format
+                content = data['candidates'][0]['content']['parts'][0]['text']
                 
                 # Robust extraction of json object from response content (especially helpful for Gemma)
                 # Search for any ```json ... ``` blocks
