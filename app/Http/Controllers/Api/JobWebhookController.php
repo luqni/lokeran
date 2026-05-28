@@ -48,16 +48,27 @@ class JobWebhookController extends Controller
         // 3.5 Normalize source URL (Remove tracking parameters like ?refId=...)
         $cleanSourceUrl = explode('?', $validated['source_url'])[0];
 
-        // 4. Duplicate prevention (source URL basis OR identical title & company)
-        $existingJob = JobListing::where('source_url', 'LIKE', $cleanSourceUrl . '%')
-            ->orWhere(function($query) use ($validated) {
-                $query->where('job_title', $validated['job_title']);
-                if (isset($validated['company_name'])) {
-                    $query->where('company_name', $validated['company_name']);
-                } else {
-                    $query->whereNull('company_name');
-                }
-            })->first();
+        // 4. Duplicate prevention (source URL basis)
+        $existingJob = JobListing::where('source_url', $cleanSourceUrl)
+            ->orWhere('source_url', $validated['source_url'])
+            ->first();
+
+        // Also check if very similar job exists across ANY platform to prevent duplicates
+        // "Mirip banget": Same company, and exact same title (ignoring case/platform)
+        if (!$existingJob) {
+            $existingJob = JobListing::where('company_name', $validated['company_name'] ?? 'Confidential')
+                ->where('job_title', $validated['job_title'])
+                ->first();
+        }
+
+        // Additional fuzzy check: if the title is very similar (contains the word) for the same company
+        if (!$existingJob && isset($validated['company_name'])) {
+            $existingJob = JobListing::where('company_name', $validated['company_name'])
+                ->where(function($query) use ($validated) {
+                    $query->where('job_title', 'LIKE', '%' . $validated['job_title'] . '%')
+                          ->orWhereRaw('? LIKE CONCAT("%", job_title, "%")', [$validated['job_title']]);
+                })->first();
+        }
 
         if ($existingJob) {
             Log::info('Hermes API Webhook: Job already exists (duplicate detected), skipping.', [
