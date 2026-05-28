@@ -86,22 +86,33 @@ new class extends Component
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
             @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
-                <div>
-                    <p class="text-sm mt-2 text-gray-800">
+                <div class="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-2xl">
+                    <p class="text-sm text-amber-800">
                         {{ __('Your email address is unverified.') }}
 
-                        <button wire:click.prevent="sendVerification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                            {{ __('Click here to re-send the verification email.') }}
+                        <button wire:click.prevent="sendVerification" wire:loading.attr="disabled" class="mt-2 block w-full sm:w-auto text-center px-4 py-2 border border-amber-300 text-xs font-semibold rounded-xl text-amber-800 bg-white hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 shadow-sm transition-all duration-300 gap-2 disabled:opacity-50">
+                            <span wire:loading.remove wire:target="sendVerification" class="flex items-center justify-center gap-1.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                                {{ __('Kirim Ulang Email Verifikasi') }}
+                            </span>
+                            <span wire:loading wire:target="sendVerification" class="flex items-center justify-center gap-1.5">
+                                <svg class="animate-spin h-3.5 h-3.5 text-amber-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                {{ __('Mengirim...') }}
+                            </span>
                         </button>
                     </p>
 
                     @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600">
+                        <p class="mt-3 font-semibold text-xs text-green-700 bg-green-50 border border-green-200 rounded-xl p-2 px-3 animate-pulse">
                             {{ __('A new verification link has been sent to your email address.') }}
                         </p>
                     @endif
                 </div>
             @endif
+
         </div>
 
         <div class="flex items-center gap-4">
