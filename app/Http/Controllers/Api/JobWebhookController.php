@@ -33,7 +33,7 @@ class JobWebhookController extends Controller
             'requirements' => 'nullable|array',
             'source_url' => 'required|url',
             'location' => 'nullable|string',
-            'posted_at' => 'nullable|date',
+            'posted_at' => 'nullable|string',
         ]);
 
         // 3. Resolve active platform by name
@@ -82,6 +82,21 @@ class JobWebhookController extends Controller
             ], 200);
         }
 
+        // Parse posted_at safely
+        $parsedPostedAt = null;
+        if (!empty($validated['posted_at'])) {
+            try {
+                // If it's something like "2 hari lalu", Carbon might throw an exception or return a weird date.
+                // We just let Carbon try to parse it. If it fails, we fall back to null.
+                $parsedPostedAt = \Carbon\Carbon::parse($validated['posted_at']);
+            } catch (\Exception $e) {
+                Log::warning('Hermes API Webhook: Invalid posted_at format, ignoring.', [
+                    'posted_at' => $validated['posted_at']
+                ]);
+                $parsedPostedAt = null;
+            }
+        }
+
         // 5. Store structured Job Listing
         try {
             $job = JobListing::create([
@@ -92,7 +107,7 @@ class JobWebhookController extends Controller
                 'requirements' => $validated['requirements'] ? json_encode($validated['requirements']) : null,
                 'source_url' => $cleanSourceUrl,
                 'location' => $validated['location'] ?? 'Indonesia',
-                'posted_at' => isset($validated['posted_at']) ? \Carbon\Carbon::parse($validated['posted_at']) : null,
+                'posted_at' => $parsedPostedAt,
             ]);
 
             Log::info('Hermes API Webhook: Successfully stored new job listing.', [
