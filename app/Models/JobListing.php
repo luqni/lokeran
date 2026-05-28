@@ -8,6 +8,13 @@ class JobListing extends Model
 {
     protected $guarded = [];
 
+    protected function casts(): array
+    {
+        return [
+            'posted_at' => 'datetime',
+        ];
+    }
+
     public function platform()
     {
         return $this->belongsTo(Platform::class);

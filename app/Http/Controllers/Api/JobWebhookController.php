@@ -33,6 +33,7 @@ class JobWebhookController extends Controller
             'requirements' => 'nullable|array',
             'source_url' => 'required|url',
             'location' => 'nullable|string',
+            'posted_at' => 'nullable|date',
         ]);
 
         // 3. Resolve active platform by name
@@ -80,6 +81,7 @@ class JobWebhookController extends Controller
                 'requirements' => $validated['requirements'] ? json_encode($validated['requirements']) : null,
                 'source_url' => $cleanSourceUrl,
                 'location' => $validated['location'] ?? 'Indonesia',
+                'posted_at' => isset($validated['posted_at']) ? \Carbon\Carbon::parse($validated['posted_at']) : null,
             ]);
 
             Log::info('Hermes API Webhook: Successfully stored new job listing.', [

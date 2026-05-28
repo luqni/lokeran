@@ -25,7 +25,9 @@ class JobBoard extends Component
     
     public function mount()
     {
-        $this->platforms = Platform::where('is_active', true)->get();
+        $this->platforms = Platform::where('is_active', true)
+            ->whereIn('name', ['LinkedIn', 'Karirhub Kemnaker']) // Hanya tampilkan LinkedIn & Karirhub Kemnaker
+            ->get();
         $this->resetNotification();
     }
 

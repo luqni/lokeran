@@ -163,7 +163,7 @@
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="text-xs font-medium text-gray-400 bg-gray-50 px-2.5 py-1 rounded-lg">
-                                    {{ $job->created_at->diffForHumans() }}
+                                    {{ ($job->posted_at ?? $job->created_at)->diffForHumans() }}
                                 </span>
                                 <button wire:click.stop="toggleSaveJob({{ $job->id }})" class="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-red-600 transition-colors" title="Simpan Lowongan">
                                     <svg class="w-5 h-5 {{ auth()->check() && $job->savedByUsers->contains(auth()->id()) ? 'fill-red-600 text-red-600' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -218,6 +218,29 @@
                     </div>
                 @endif
             </div>
+
+            <!-- Visitor Tracker -->
+            <div class="mt-4 pt-6 border-t border-gray-100 flex flex-col items-center justify-center text-center">
+                @php
+                    $todayVisitors = 0;
+                    $totalVisitors = 0;
+                    try {
+                        $todayVisitors = \Illuminate\Support\Facades\DB::table('visitors')->where('visit_date', now()->toDateString())->count();
+                        $totalVisitors = \Illuminate\Support\Facades\DB::table('visitors')->count();
+                    } catch (\Exception $e) {}
+                @endphp
+                <div class="inline-flex items-center gap-4 px-6 py-3 bg-white rounded-full shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        <span class="text-xs font-bold text-gray-700">Pengunjung Hari Ini: <span class="text-green-600">{{ number_format($todayVisitors) }}</span></span>
+                    </div>
+                    <div class="w-px h-4 bg-gray-200"></div>
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        <span class="text-xs font-bold text-gray-700">Total Keseluruhan: <span class="text-blue-600">{{ number_format($totalVisitors) }}</span></span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Right Column: Detail View Drawer/Sidebar -->
@@ -246,7 +269,7 @@
                         @else
                             <span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm font-semibold rounded-full">Source: {{ $selectedJob->platform->name }}</span>
                         @endif
-                        <span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm font-semibold rounded-full">Posted: {{ $selectedJob->created_at->format('M d, Y') }}</span>
+                        <span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm font-semibold rounded-full">Posted: {{ ($selectedJob->posted_at ?? $selectedJob->created_at)->format('M d, Y') }}</span>
                     </div>
 
                     <div class="prose prose-red max-w-none">
@@ -319,7 +342,7 @@
                             @endif
                             <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-50 text-gray-600 border border-gray-100">
                                 <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                {{ $selectedJob->created_at->diffForHumans() }}
+                                {{ ($selectedJob->posted_at ?? $selectedJob->created_at)->diffForHumans() }}
                             </span>
                         </div>
 
