@@ -43,6 +43,7 @@ new class extends Component
             @if(auth()->check() && auth()->user()->isAdmin())
                 <a href="{{ route('admin.platforms') }}" wire:navigate class="text-sm font-bold text-gray-600 hover:text-red-600 transition-colors hidden sm:block">Platforms</a>
             @endif
+            <a href="{{ route('applications') }}" wire:navigate class="text-sm font-bold {{ request()->routeIs('applications') ? 'text-red-600' : 'text-gray-600 hover:text-red-600' }} transition-colors hidden sm:block">Lamaran Saya</a>
             <a href="{{ route('profile') }}" wire:navigate class="text-sm font-bold {{ request()->routeIs('profile') ? 'text-red-600' : 'text-gray-600 hover:text-red-600' }} transition-colors hidden sm:block">Profile</a>
             
             <button wire:click="logout" class="text-sm font-bold text-gray-500 hover:text-red-600 transition-colors ml-2 pl-4 border-l border-gray-200">

@@ -66,7 +66,7 @@ class JobWebhookController extends Controller
             $existingJob = JobListing::where('company_name', $validated['company_name'])
                 ->where(function($query) use ($validated) {
                     $query->where('job_title', 'LIKE', '%' . $validated['job_title'] . '%')
-                          ->orWhereRaw('? LIKE CONCAT("%", job_title, "%")', [$validated['job_title']]);
+                          ->orWhereRaw("? LIKE CONCAT('%', job_title, '%')", [$validated['job_title']]);
                 })->first();
         }
 

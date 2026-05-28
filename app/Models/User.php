@@ -32,7 +32,9 @@ class User extends Authenticatable
 
     public function savedJobs()
     {
-        return $this->belongsToMany(JobListing::class, 'saved_jobs', 'user_id', 'job_listing_id')->withTimestamps();
+        return $this->belongsToMany(JobListing::class, 'saved_jobs', 'user_id', 'job_listing_id')
+                    ->withPivot('status')
+                    ->withTimestamps();
     }
 
     public function isAdmin(): bool
