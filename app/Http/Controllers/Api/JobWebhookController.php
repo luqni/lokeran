@@ -7,6 +7,7 @@ use App\Models\JobListing;
 use App\Models\Platform;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class JobWebhookController extends Controller
 {
@@ -45,33 +46,56 @@ class JobWebhookController extends Controller
             return response()->json(['message' => 'Platform not found'], 422);
         }
 
-        // 3.5 Normalize source URL (Remove tracking parameters like ?refId=...)
-        $cleanSourceUrl = explode('?', $validated['source_url'])[0];
+        // --- 3.5 STRATEGI BARU: Ekstrak ID Unik dari URL Sumber ---
+        $cleanSourceUrl = $validated['source_url'];
+        $uniqueJobId = null;
 
-        // 4. Duplicate prevention (source URL basis)
-        $existingJob = JobListing::where('source_url', $cleanSourceUrl)
-            ->orWhere('source_url', $validated['source_url'])
-            ->first();
-
-        // Also check if very similar job exists across ANY platform to prevent duplicates
-        // "Mirip banget": Same company, and exact same title (ignoring case/platform)
-        if (!$existingJob) {
-            $existingJob = JobListing::where('company_name', $validated['company_name'] ?? 'Confidential')
-                ->where('job_title', $validated['job_title'])
-                ->first();
+        // Ambil ID angka murni dari URL LinkedIn atau JobStreet untuk akurasi database
+        if (preg_match('/(?:job\/|view\/)(\d+)/i', $cleanSourceUrl, $matches)) {
+            $uniqueJobId = $matches[1];
         }
 
-        // Additional fuzzy check: if the title is very similar (contains the word) for the same company
-        if (!$existingJob && isset($validated['company_name'])) {
-            $existingJob = JobListing::where('company_name', $validated['company_name'])
-                ->where(function($query) use ($validated) {
-                    $query->where('job_title', 'LIKE', '%' . $validated['job_title'] . '%')
-                          ->orWhereRaw("? LIKE CONCAT('%', job_title, '%')", [$validated['job_title']]);
-                })->first();
+        // 4. PREVENSI DUPLIKAT LEVEL 1: Berdasarkan ID Lowongan atau URL Dasarnya
+        $existingJob = JobListing::where(function($query) use ($cleanSourceUrl, $uniqueJobId) {
+            $query->where('source_url', $cleanSourceUrl)
+                  ->orWhere('source_url', explode('?', $cleanSourceUrl)[0]);
+            
+            if ($uniqueJobId) {
+                $query->orWhere('source_url', 'LIKE', '%' . $uniqueJobId . '%');
+            }
+        })->first();
+
+        // --- PREVENSI DUPLIKAT LEVEL 2: String Normalization (Kombinasi Konten) ---
+        if (!$existingJob) {
+            $incomingCompany = trim($validated['company_name'] ?? 'Confidential');
+            $incomingTitle = trim($validated['job_title']);
+            $incomingLocation = trim($validated['location'] ?? 'Indonesia');
+
+            // Bikin fungsi helper lokal untuk membersihkan string (buang spasi hantu, tanda baca, lowercase)
+            $sanitize = function($string) {
+                return strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $string));
+            };
+
+            $sanitizedTitle = $sanitize($incomingTitle);
+            $sanitizedCompany = $sanitize($incomingCompany);
+            $sanitizedLocation = $sanitize($incomingLocation);
+
+            // Cari lowongan aktif di database (misal maksimal 14 hari terakhir) yang kontennya mirip
+            $existingJob = JobListing::where('created_at', '>=', now()->subDays(14))
+                ->get() // Ambil chunk data untuk divalidasi di memory agar ringan
+                ->first(function($job) use ($sanitizedTitle, $sanitizedCompany, $sanitizedLocation, $sanitize) {
+                    // Jika nama perusahaan bukan 'Confidential', bandingkan kesamaan kombinasi data
+                    if ($sanitize($job->company_name) !== 'confidential') {
+                        return $sanitize($job->company_name) === $sanitizedCompany 
+                            && $sanitize($job->job_title) === $sanitizedTitle
+                            && $sanitize($job->location ?? 'Indonesia') === $sanitizedLocation;
+                    }
+                    return false;
+                });
         }
 
         if ($existingJob) {
-            Log::info('Hermes API Webhook: Job already exists (duplicate detected), skipping.', [
+            Log::info('Hermes API Webhook: Duplicate detected via Content/URL Hash, skipping.', [
                 'job_title' => $validated['job_title'],
                 'company' => $validated['company_name'] ?? 'Confidential',
                 'job_id' => $existingJob->id
@@ -86,14 +110,12 @@ class JobWebhookController extends Controller
         $parsedPostedAt = null;
         if (!empty($validated['posted_at'])) {
             try {
-                // If it's something like "2 hari lalu", Carbon might throw an exception or return a weird date.
-                // We just let Carbon try to parse it. If it fails, we fall back to null.
-                $parsedPostedAt = \Carbon\Carbon::parse($validated['posted_at']);
+                $parsedPostedAt = Carbon::parse($validated['posted_at']);
             } catch (\Exception $e) {
-                Log::warning('Hermes API Webhook: Invalid posted_at format, ignoring.', [
+                Log::warning('Hermes API Webhook: Invalid posted_at format, fallback to now.', [
                     'posted_at' => $validated['posted_at']
                 ]);
-                $parsedPostedAt = null;
+                $parsedPostedAt = now();
             }
         }
 
@@ -105,7 +127,7 @@ class JobWebhookController extends Controller
                 'company_name' => $validated['company_name'] ?? 'Confidential',
                 'company_logo' => $validated['company_logo'],
                 'requirements' => $validated['requirements'] ? json_encode($validated['requirements']) : null,
-                'source_url' => $cleanSourceUrl,
+                'source_url' => explode('?', $cleanSourceUrl)[0], // Simpan versi bersih tanpa tracking
                 'location' => $validated['location'] ?? 'Indonesia',
                 'posted_at' => $parsedPostedAt,
             ]);
@@ -132,7 +154,6 @@ class JobWebhookController extends Controller
 
     public function heartbeat(Request $request)
     {
-        // 1. Validate security API token
         $token = $request->header('X-Hermes-Token');
         $expectedToken = config('services.hermes.webhook_token');
 
@@ -140,7 +161,6 @@ class JobWebhookController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        // 2. Read statistics from payload
         $stats = [
             'cpu_usage' => $request->input('cpu_usage', '0%'),
             'ram_usage' => $request->input('ram_usage', '0MB'),
@@ -149,8 +169,7 @@ class JobWebhookController extends Controller
             'last_seen' => now()->timestamp,
         ];
 
-        // 3. Save to cache
-        \Illuminate\Support\Facades\Cache::put('hermes_status', $stats, 86400); // 1 day cache
+        \Illuminate\Support\Facades\Cache::put('hermes_status', $stats, 86400);
 
         return response()->json([
             'message' => 'Heartbeat received successfully',
