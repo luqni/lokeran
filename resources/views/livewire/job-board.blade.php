@@ -260,6 +260,19 @@
                                     @endif
                                 </span>
                                 @endif
+                                @if($job->min_salary || $job->max_salary)
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700" title="Gaji">
+                                    <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    @if($job->min_salary && $job->max_salary)
+                                        {{ $job->min_salary >= 1000000 ? number_format($job->min_salary/1000000, 0, ',', '.') . 'jt' : number_format($job->min_salary, 0, ',', '.') }} - 
+                                        {{ $job->max_salary >= 1000000 ? number_format($job->max_salary/1000000, 0, ',', '.') . 'jt' : number_format($job->max_salary, 0, ',', '.') }}
+                                    @elseif($job->min_salary)
+                                        Min {{ $job->min_salary >= 1000000 ? number_format($job->min_salary/1000000, 0, ',', '.') . 'jt' : number_format($job->min_salary, 0, ',', '.') }}
+                                    @else
+                                        Maks {{ $job->max_salary >= 1000000 ? number_format($job->max_salary/1000000, 0, ',', '.') . 'jt' : number_format($job->max_salary, 0, ',', '.') }}
+                                    @endif
+                                </span>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -362,6 +375,19 @@
                                 @endif
                             </span>
                         @endif
+                        @if($selectedJob->min_salary || $selectedJob->max_salary)
+                            <span class="px-3 py-1 bg-emerald-50 text-emerald-700 text-sm font-semibold rounded-full">
+                                Gaji: 
+                                @if($selectedJob->min_salary && $selectedJob->max_salary)
+                                    {{ $selectedJob->min_salary >= 1000000 ? number_format($selectedJob->min_salary/1000000, 0, ',', '.') . 'jt' : number_format($selectedJob->min_salary, 0, ',', '.') }} - 
+                                    {{ $selectedJob->max_salary >= 1000000 ? number_format($selectedJob->max_salary/1000000, 0, ',', '.') . 'jt' : number_format($selectedJob->max_salary, 0, ',', '.') }}
+                                @elseif($selectedJob->min_salary)
+                                    Minimal {{ $selectedJob->min_salary >= 1000000 ? number_format($selectedJob->min_salary/1000000, 0, ',', '.') . 'jt' : number_format($selectedJob->min_salary, 0, ',', '.') }}
+                                @else
+                                    Maksimal {{ $selectedJob->max_salary >= 1000000 ? number_format($selectedJob->max_salary/1000000, 0, ',', '.') . 'jt' : number_format($selectedJob->max_salary, 0, ',', '.') }}
+                                @endif
+                            </span>
+                        @endif
                     </div>
 
                     <div class="prose prose-red max-w-none">
@@ -447,6 +473,19 @@
                                         Min {{ $selectedJob->min_age }} Thn
                                     @else
                                         Maks {{ $selectedJob->max_age }} Thn
+                                    @endif
+                                </span>
+                            @endif
+                            @if($selectedJob->min_salary || $selectedJob->max_salary)
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                                    <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    @if($selectedJob->min_salary && $selectedJob->max_salary)
+                                        {{ $selectedJob->min_salary >= 1000000 ? number_format($selectedJob->min_salary/1000000, 0, ',', '.') . 'jt' : number_format($selectedJob->min_salary, 0, ',', '.') }} - 
+                                        {{ $selectedJob->max_salary >= 1000000 ? number_format($selectedJob->max_salary/1000000, 0, ',', '.') . 'jt' : number_format($selectedJob->max_salary, 0, ',', '.') }}
+                                    @elseif($selectedJob->min_salary)
+                                        Min {{ $selectedJob->min_salary >= 1000000 ? number_format($selectedJob->min_salary/1000000, 0, ',', '.') . 'jt' : number_format($selectedJob->min_salary, 0, ',', '.') }}
+                                    @else
+                                        Maks {{ $selectedJob->max_salary >= 1000000 ? number_format($selectedJob->max_salary/1000000, 0, ',', '.') . 'jt' : number_format($selectedJob->max_salary, 0, ',', '.') }}
                                     @endif
                                 </span>
                             @endif

@@ -38,6 +38,8 @@ class JobWebhookController extends Controller
             'min_age' => 'nullable|integer',
             'max_age' => 'nullable|integer',
             'province' => 'nullable|string',
+            'min_salary' => 'nullable|integer',
+            'max_salary' => 'nullable|integer',
         ]);
 
         // Clean and validate job title content to reject generic/landing page values
@@ -151,6 +153,8 @@ class JobWebhookController extends Controller
                 'min_age' => $validated['min_age'] ?? null,
                 'max_age' => $validated['max_age'] ?? null,
                 'province' => $validated['province'] ?? null,
+                'min_salary' => $validated['min_salary'] ?? null,
+                'max_salary' => $validated['max_salary'] ?? null,
             ]);
 
             Log::info('Hermes API Webhook: Successfully stored new job listing.', [
