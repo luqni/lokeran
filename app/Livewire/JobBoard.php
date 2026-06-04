@@ -15,6 +15,8 @@ class JobBoard extends Component
     public $searchQuery = '';
     public $locationFilter = 'All';
     public $dateFilter = 'All';
+    public $provinceFilter = 'All';
+    public $ageFilter = 'All';
     public $selectedJob = null;
     public $perPage = 10;
     public $showSavedOnly = false;
@@ -69,6 +71,18 @@ class JobBoard extends Component
         $this->resetNotification();
     }
 
+    public function updatedProvinceFilter()
+    {
+        $this->perPage = 10;
+        $this->resetNotification();
+    }
+
+    public function updatedAgeFilter()
+    {
+        $this->perPage = 10;
+        $this->resetNotification();
+    }
+
     public function checkForNewJobs()
     {
         if ($this->showSavedOnly) {
@@ -91,6 +105,8 @@ class JobBoard extends Component
         $this->searchQuery = '';
         $this->locationFilter = 'All';
         $this->dateFilter = 'All';
+        $this->provinceFilter = 'All';
+        $this->ageFilter = 'All';
         $this->selectedPlatform = null;
         $this->showSavedOnly = false;
         
@@ -165,6 +181,20 @@ class JobBoard extends Component
             ->when($this->locationFilter !== 'All', function ($query) {
                 $query->where('location', $this->locationFilter);
             })
+            ->when($this->provinceFilter !== 'All', function ($query) {
+                $query->where('province', $this->provinceFilter);
+            })
+            ->when($this->ageFilter !== 'All', function ($query) {
+                $query->where(function ($q) {
+                    $q->where(function ($sub) {
+                        $sub->whereNull('min_age')
+                            ->orWhere('min_age', '<=', $this->ageFilter);
+                    })->where(function ($sub) {
+                        $sub->whereNull('max_age')
+                            ->orWhere('max_age', '>=', $this->ageFilter);
+                    });
+                });
+            })
             ->when($this->dateFilter !== 'All', function ($query) {
                 if ($this->dateFilter === 'Past 24 Hours') {
                     $query->where('created_at', '>=', now()->subDay());
@@ -201,6 +231,20 @@ class JobBoard extends Component
             ->when($this->locationFilter !== 'All', function ($query) {
                 $query->where('location', $this->locationFilter);
             })
+            ->when($this->provinceFilter !== 'All', function ($query) {
+                $query->where('province', $this->provinceFilter);
+            })
+            ->when($this->ageFilter !== 'All', function ($query) {
+                $query->where(function ($q) {
+                    $q->where(function ($sub) {
+                        $sub->whereNull('min_age')
+                            ->orWhere('min_age', '<=', $this->ageFilter);
+                    })->where(function ($sub) {
+                        $sub->whereNull('max_age')
+                            ->orWhere('max_age', '>=', $this->ageFilter);
+                    });
+                });
+            })
             ->when($this->dateFilter !== 'All', function ($query) {
                 if ($this->dateFilter === 'Past 24 Hours') {
                     $query->where('created_at', '>=', now()->subDay());
@@ -222,11 +266,18 @@ class JobBoard extends Component
             }
         }
 
+        $provinces = JobListing::whereNotNull('province')
+            ->where('province', '<>', '')
+            ->distinct()
+            ->orderBy('province')
+            ->pluck('province');
+
         return view('livewire.job-board', [
             'jobs' => $jobs,
             'totalJobs' => $totalJobs,
             'hermesOnline' => $hermesOnline,
-            'hermesStatus' => $hermesStatus
+            'hermesStatus' => $hermesStatus,
+            'provinces' => $provinces
         ])->layout('layouts.app');
     }
 }

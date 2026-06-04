@@ -35,7 +35,25 @@ class JobWebhookController extends Controller
             'source_url' => 'required|url',
             'location' => 'nullable|string',
             'posted_at' => 'nullable|string',
+            'min_age' => 'nullable|integer',
+            'max_age' => 'nullable|integer',
+            'province' => 'nullable|string',
         ]);
+
+        // Clean and validate job title content to reject generic/landing page values
+        $invalidTitles = [
+            'unknown job', 'unknown', 'unknown job title', 'job title', 'null',
+            'job fair', 'sign in', 'login', 'register', 'cookie consent', 'cookie',
+            'kementerian ketenagakerjaan ri', 'kemnaker', 'jobstreet', 'linkedin', 'indeed',
+            'hubungi kami', 'contact us', 'about us', 'tentang kami', 'privacy policy'
+        ];
+        if (in_array(strtolower(trim($validated['job_title'])), $invalidTitles)) {
+            Log::warning('Hermes API Webhook: Rejected generic/invalid job title.', [
+                'job_title' => $validated['job_title'],
+                'url' => $validated['source_url']
+            ]);
+            return response()->json(['message' => 'Invalid job title'], 422);
+        }
 
         // 3. Resolve active platform by name
         $platform = Platform::where('name', $validated['platform_name'])->first();
@@ -130,6 +148,9 @@ class JobWebhookController extends Controller
                 'source_url' => explode('?', $cleanSourceUrl)[0], // Simpan versi bersih tanpa tracking
                 'location' => $validated['location'] ?? 'Indonesia',
                 'posted_at' => $parsedPostedAt,
+                'min_age' => $validated['min_age'] ?? null,
+                'max_age' => $validated['max_age'] ?? null,
+                'province' => $validated['province'] ?? null,
             ]);
 
             Log::info('Hermes API Webhook: Successfully stored new job listing.', [
