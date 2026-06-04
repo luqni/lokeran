@@ -56,7 +56,7 @@
             </div>
 
             <!-- Row 2: Search & Filters (Always below Logo) -->
-            <div class="py-3 flex items-center h-14">
+            <div class="py-2 flex items-center h-14">
                 
                 <div x-data="{ 
                     canScrollLeft: false, 
@@ -69,13 +69,16 @@
                     }
                 }" x-init="setTimeout(() => checkScroll(), 200); $watch('searchVal', () => $nextTick(() => checkScroll()))" @resize.window.debounce.100ms="checkScroll()" class="relative flex-1 lg:flex-none flex items-center h-full min-w-0">
                     
-                    <!-- Left Arrow Button -->
-                    <button type="button" x-show="canScrollLeft" @click="$refs.filterScroll.scrollBy({ left: -120, behavior: 'smooth' })" style="left: -0.5rem;" class="absolute z-20 bg-white/95 hover:bg-white border border-gray-200 shadow-md rounded-full p-1 text-gray-500 hover:text-red-600 transition-all flex items-center justify-center w-7 h-7">
+                    <!-- Left Gradient Overlay (Mobile/Tablet) -->
+                    <div x-show="canScrollLeft" class="lg:hidden absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent pointer-events-none z-10"></div>
+
+                    <!-- Left Arrow Button (Desktop Only) -->
+                    <button type="button" x-show="canScrollLeft" @click="$refs.filterScroll.scrollBy({ left: -120, behavior: 'smooth' })" style="left: -0.5rem;" class="hidden lg:flex absolute z-20 bg-white/95 hover:bg-white border border-gray-200 shadow-md rounded-full p-1 text-gray-500 hover:text-red-600 transition-all items-center justify-center w-7 h-7">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                     </button>
 
                     <!-- Scrollable Container -->
-                    <div x-ref="filterScroll" @scroll="checkScroll()" class="flex items-center gap-2 w-full lg:w-auto h-full overflow-x-auto scrollbar-hide py-1">
+                    <div x-ref="filterScroll" @scroll="checkScroll()" class="flex items-center gap-2 w-full lg:w-auto h-full overflow-x-auto scrollbar-hide py-1 -mx-4 px-4 lg:mx-0 lg:px-0">
                         <!-- Desktop Search (Always visible, fixed width) -->
                         <div class="hidden lg:flex relative items-center w-64 h-full flex-shrink-0">
                             <svg class="w-5 h-5 text-gray-400 absolute left-3 z-10 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -127,17 +130,20 @@
                         </select>
                     </div>
 
-                    <!-- Right Arrow Button -->
-                    <button type="button" x-show="canScrollRight" @click="$refs.filterScroll.scrollBy({ left: 120, behavior: 'smooth' })" style="right: -0.5rem;" class="absolute z-20 bg-white/95 hover:bg-white border border-gray-200 shadow-md rounded-full p-1 text-gray-500 hover:text-red-600 transition-all flex items-center justify-center w-7 h-7">
+                    <!-- Right Arrow Button (Desktop Only) -->
+                    <button type="button" x-show="canScrollRight" @click="$refs.filterScroll.scrollBy({ left: 120, behavior: 'smooth' })" style="right: -0.5rem;" class="hidden lg:flex absolute z-20 bg-white/95 hover:bg-white border border-gray-200 shadow-md rounded-full p-1 text-gray-500 hover:text-red-600 transition-all items-center justify-center w-7 h-7">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </button>
+
+                    <!-- Right Gradient Overlay (Mobile/Tablet) -->
+                    <div x-show="canScrollRight" class="lg:hidden absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-10"></div>
                 </div>
             </div>
         </div>
 
         <!-- Platform Filters (Sticky child bar) -->
         <div class="border-t border-gray-100 bg-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 md:py-3">
                 <div x-data="{ 
                     canScrollLeft: false, 
                     canScrollRight: false,
@@ -149,13 +155,16 @@
                     }
                 }" x-init="setTimeout(() => checkScroll(), 200)" @resize.window.debounce.100ms="checkScroll()" class="relative flex items-center w-full">
                     
-                    <!-- Left Arrow Button -->
-                    <button type="button" x-show="canScrollLeft" @click="$refs.platformScroll.scrollBy({ left: -200, behavior: 'smooth' })" style="left: -0.75rem;" class="absolute z-20 bg-white/95 hover:bg-white border border-gray-200 shadow-md rounded-full p-1.5 text-gray-500 hover:text-red-600 transition-all flex items-center justify-center w-9 h-9">
+                    <!-- Left Gradient Overlay (Mobile/Tablet) -->
+                    <div x-show="canScrollLeft" class="lg:hidden absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent pointer-events-none z-10"></div>
+
+                    <!-- Left Arrow Button (Desktop Only) -->
+                    <button type="button" x-show="canScrollLeft" @click="$refs.platformScroll.scrollBy({ left: -200, behavior: 'smooth' })" style="left: -0.75rem;" class="hidden lg:flex absolute z-20 bg-white/95 hover:bg-white border border-gray-200 shadow-md rounded-full p-1.5 text-gray-500 hover:text-red-600 transition-all items-center justify-center w-9 h-9">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                     </button>
 
                     <!-- Scrollable platform list -->
-                    <div x-ref="platformScroll" @scroll="checkScroll()" class="flex gap-3 overflow-x-auto pb-1 scrollbar-hide w-full">
+                    <div x-ref="platformScroll" @scroll="checkScroll()" class="flex gap-3 overflow-x-auto pb-1 scrollbar-hide w-full -mx-4 px-4 lg:mx-0 lg:px-0">
                         <button wire:click="selectPlatform(null)" class="flex-shrink-0 whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-medium transition-all {{ $selectedPlatform === null ? 'bg-red-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200' }}">
                             All Platforms
                         </button>
@@ -169,13 +178,13 @@
                         @endforeach
                     </div>
 
-                    <!-- Right Arrow Button -->
-                    <button type="button" x-show="canScrollRight" @click="$refs.platformScroll.scrollBy({ left: 200, behavior: 'smooth' })" style="right: -0.75rem;" class="absolute z-20 bg-white/95 hover:bg-white border border-gray-200 shadow-md rounded-full p-1.5 text-gray-500 hover:text-red-600 transition-all flex items-center justify-center w-9 h-9">
+                    <!-- Right Arrow Button (Desktop Only) -->
+                    <button type="button" x-show="canScrollRight" @click="$refs.platformScroll.scrollBy({ left: 200, behavior: 'smooth' })" style="right: -0.75rem;" class="hidden lg:flex absolute z-20 bg-white/95 hover:bg-white border border-gray-200 shadow-md rounded-full p-1.5 text-gray-500 hover:text-red-600 transition-all items-center justify-center w-9 h-9">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                     </button>
-                </div>
-            </div>
-        </div>
+
+                    <!-- Right Gradient Overlay (Mobile/Tablet) -->
+                    <div x-show="canScrollRight" class="lg:hidden absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-10"></div>
     </header>
 
     <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 md:pb-8 w-full flex gap-8">
