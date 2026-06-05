@@ -218,6 +218,12 @@
                 </div>
             @endif
 
+            <div class="flex items-center justify-between mb-4 px-1">
+                <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    Ditemukan <span class="text-red-600 font-extrabold">{{ number_format($totalJobs) }}</span> lowongan kerja
+                </span>
+            </div>
+
             <!-- Job Cards -->
             <div class="space-y-4">
                 @forelse($jobs as $job)
