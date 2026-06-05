@@ -1,4 +1,18 @@
-<div x-data="{ searchFocused: false, searchVal: @entangle('searchQuery') }" x-init="$watch('searchVal', val => { if(val) searchFocused = true; })" class="min-h-screen bg-gray-50 flex flex-col font-sans" wire:poll.15s="checkForNewJobs">
+<div x-data="{ 
+    searchFocused: false, 
+    searchVal: @entangle('searchQuery'),
+    selectedJob: @entangle('selectedJob')
+}" x-init="
+    $watch('searchVal', val => { if(val) searchFocused = true; });
+" x-effect="
+    if (selectedJob) {
+        document.documentElement.classList.add('overflow-hidden', 'lg:overflow-auto');
+        document.body.classList.add('overflow-hidden', 'lg:overflow-auto');
+    } else {
+        document.documentElement.classList.remove('overflow-hidden', 'lg:overflow-auto');
+        document.body.classList.remove('overflow-hidden', 'lg:overflow-auto');
+    }
+" class="min-h-screen bg-gray-50 flex flex-col font-sans" wire:poll.15s="checkForNewJobs">
     
     <!-- Global Fullscreen Loader -->
     <div wire:loading.flex wire:target="locationFilter, dateFilter, searchQuery, selectPlatform, toggleSavedFilter, selectJob, showNewJobs" class="fixed inset-0 z-[100] bg-white/80 backdrop-blur-sm flex-col items-center justify-center transition-all duration-300">
@@ -422,15 +436,15 @@
             
             <!-- Mobile Bottom Sheet (Visible only on small screens) -->
             <div class="fixed inset-0 z-[60] lg:hidden overflow-hidden flex flex-col justify-end {{ $selectedJob ? 'block' : 'hidden' }}">
-                <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" wire:click="closeJobDetails"></div>
-                <div class="relative w-full max-w-md mx-auto bg-white rounded-t-[2.5rem] shadow-2xl flex flex-col h-[75vh] max-h-[75vh] animate-slide-up mt-auto border-t border-gray-100 overflow-hidden z-10">
+                <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" wire:click="closeJobDetails" @touchmove.prevent></div>
+                <div class="relative w-full max-w-md mx-auto bg-white rounded-t-[2.5rem] shadow-2xl flex flex-col h-[75vh] max-h-[75vh] animate-slide-up mt-auto border-t border-gray-100 overflow-hidden overscroll-contain z-10">
                     <!-- Pull Indicator -->
-                    <div class="w-full flex justify-center pt-4 pb-2 cursor-pointer" wire:click="closeJobDetails">
+                    <div class="w-full flex justify-center pt-4 pb-2 cursor-pointer" wire:click="closeJobDetails" @touchmove.prevent>
                         <div class="w-12 h-1.5 bg-gray-200 rounded-full"></div>
                     </div>
                     
                     <!-- Header: Unified Logo and Job Title -->
-                    <div class="px-6 pb-4 flex items-start justify-between gap-4 border-b border-gray-50">
+                    <div class="px-6 pb-4 flex items-start justify-between gap-4 border-b border-gray-50" @touchmove.prevent>
                         <div class="flex gap-4 items-center flex-1 min-w-0">
                             <img src="{{ $selectedJob->company_logo ?? 'https://ui-avatars.com/api/?name=' . urlencode($selectedJob->company_name ?? 'Confidential') . '&color=4f46e5&background=e0e7ff&size=64&bold=true' }}" class="w-12 h-12 rounded-2xl object-cover border border-gray-100 shadow-sm flex-shrink-0" alt="{{ $selectedJob->company_name }}">
                             <div class="min-w-0 flex-1">
@@ -449,7 +463,7 @@
                     </div>
 
                     <!-- Content: Info & Requirements (Scrollable) -->
-                    <div class="flex-1 overflow-y-auto overflow-x-hidden p-6 space-y-5">
+                    <div class="flex-1 overflow-y-auto overscroll-contain overflow-x-hidden p-6 space-y-5">
                         <!-- Quick Meta Badges -->
                         <div class="flex flex-wrap gap-2">
                             @if($selectedJob->location)
@@ -516,7 +530,7 @@
                     </div>
 
                     <!-- Sticky Footer: CTA Button -->
-                    <div class="p-6 border-t border-gray-100 bg-white/95 backdrop-blur-sm pb-8 flex-shrink-0 flex items-center gap-3">
+                    <div class="p-6 border-t border-gray-100 bg-white/95 backdrop-blur-sm pb-8 flex-shrink-0 flex items-center gap-3" @touchmove.prevent>
                         <button wire:click="toggleSaveJob({{ $selectedJob->id }})" class="flex-shrink-0 p-4 rounded-2xl border border-gray-200 hover:border-red-200 text-gray-400 hover:text-red-600 active:scale-95 transition-all" title="{{ auth()->check() && $selectedJob->savedByUsers->contains(auth()->id()) ? 'Hapus dari Simpanan' : 'Simpan Lowongan' }}">
                             <svg class="w-6 h-6 {{ auth()->check() && $selectedJob->savedByUsers->contains(auth()->id()) ? 'fill-red-600 text-red-600' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
