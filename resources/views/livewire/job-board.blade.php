@@ -232,7 +232,7 @@
                             </div>
                         </div>
                         <div class="mt-4 flex items-center justify-between">
-                            <div class="flex items-center gap-2">
+                            <div class="flex flex-wrap items-center gap-2">
                                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700">
                                     {{ $job->platform->name }}
                                 </span>
