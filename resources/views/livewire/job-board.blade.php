@@ -22,6 +22,7 @@
                 <div class="relative w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center text-white font-extrabold text-3xl shadow-xl shadow-red-500/40 animate-bounce">
                     MP
                 </div>
+                <h1 class="text-xl font-bold text-gray-900 tracking-tight hidden sm:block">Loker Merah Putih</h1>
             </div>
             <span class="text-sm font-bold text-red-600 animate-pulse tracking-widest uppercase">Sedang Mencari...</span>
         </div>
