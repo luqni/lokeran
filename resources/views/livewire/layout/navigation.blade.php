@@ -26,7 +26,7 @@ new class extends Component
                 <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
                     MP
                 </div>
-                <h1 class="text-xl font-bold text-gray-900 tracking-tight hidden sm:block">Loker Merah Putih</h1>
+                <h1 class="text-xl font-bold text-gray-900 tracking-tight whitespace-nowrap">Loker Merah Putih</h1>
             </a>
             <!-- Hermes Status (Static on Profile) -->
             <div class="flex items-center gap-1.5 ml-1 sm:ml-2 bg-gray-50 border border-gray-100 rounded-full px-2 py-0.5 transition-all duration-300" title="Hermes Agent">
