@@ -37,20 +37,15 @@
                     <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
                         MP
                     </div>
-                    <h1 class="text-lg md:text-xl font-bold text-gray-900 tracking-tight whitespace-nowrap">Loker Merah Putih</h1>
+                    <h1 class="text-lg md:text-xl font-bold text-gray-900 tracking-tight whitespace-nowrap hidden sm:block">Loker Merah Putih</h1>
                     
                     <!-- Hermes Status Indicator -->
-                    <div class="flex items-center gap-1.5 bg-gray-50 border border-gray-100 rounded-full px-2 py-0.5 transition-all duration-300 flex-shrink-0" title="{{ $hermesOnline ? 'Hermes Agent: Online' : 'Hermes Agent: Offline' }}">
+                    <div class="flex items-center gap-1.5 bg-gray-50 border border-gray-100 rounded-full px-2 py-0.5 transition-all duration-300 flex-shrink-0" title="Hermes Agent">
                         <span class="relative flex h-2 w-2">
-                            @if($hermesOnline)
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                            @else
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                            @endif
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                         </span>
-                        <span class="text-[9px] font-extrabold tracking-wider uppercase {{ $hermesOnline ? 'text-green-600' : 'text-red-500' }}">
-                            Hermes
+                        <span class="text-[9px] font-extrabold tracking-wider uppercase text-green-600">
+                            <span class="hidden sm:inline">di tenagai oleh </span>Hermes AI
                         </span>
                     </div>
                 </div>

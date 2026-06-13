@@ -10,7 +10,7 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 // Jadwalkan scraper untuk berjalan otomatis
-Schedule::job(new ScrapeSocialMediaJob)->everyFiveMinutes();
+// Schedule::job(new ScrapeSocialMediaJob)->everyFiveMinutes();
 
 // Jadwalkan pembersihan data duplikat setiap hari (tengah malam)
-Schedule::command('jobs:remove-duplicates')->daily();
+// Schedule::command('jobs:remove-duplicates')->daily();

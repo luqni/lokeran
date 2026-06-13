@@ -27,9 +27,12 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Platform::insert([
-            ['name' => 'LinkedIn', 'icon_path' => 'https://cdn-icons-png.flaticon.com/512/174/174857.png', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Threads', 'icon_path' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Threads_%28app%29_logo.svg/1024px-Threads_%28app%29_logo.svg.png', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'X (Twitter)', 'icon_path' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/X_logo_2023.svg/240px-X_logo_2023.svg.png', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Loker.id', 'icon_path' => '...', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'KitaLulus', 'icon_path' => '...', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Karirhub Kemnaker', 'icon_path' => '...', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'JobStreet', 'icon_path' => '...', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Indeed', 'icon_path' => '...', 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
         ]);
+
     }
 }

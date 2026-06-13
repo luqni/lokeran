@@ -34,7 +34,7 @@ new class extends Component
                     <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                 </span>
                 <span class="text-[9px] font-extrabold tracking-wider uppercase text-green-600">
-                    Hermes
+                    <span class="hidden sm:inline">di tenagai oleh </span>Hermes AI
                 </span>
             </div>
         </div>
