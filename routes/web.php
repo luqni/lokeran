@@ -20,3 +20,7 @@ Route::view('profile', 'profile')
 
 require __DIR__.'/auth.php';
 
+Route::post('/push-subscribe', [\App\Http\Controllers\PushSubscriptionController::class, 'subscribe'])
+    ->middleware(['auth'])
+    ->name('push.subscribe');
+

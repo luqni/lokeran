@@ -14,6 +14,7 @@ new #[Layout('layouts.guest')] class extends Component
     public string $email = '';
     public string $password = '';
     public string $password_confirmation = '';
+    public string $skills = '';
 
     /**
      * Handle an incoming registration request.
@@ -24,6 +25,7 @@ new #[Layout('layouts.guest')] class extends Component
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
+            'skills' => ['nullable', 'string', 'max:1000'],
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -55,6 +57,14 @@ new #[Layout('layouts.guest')] class extends Component
             <x-input-label for="email" :value="__('Email Address')" class="text-xs font-bold text-gray-700" />
             <x-text-input wire:model="email" id="email" class="block mt-1 w-full rounded-xl border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 text-sm" type="email" name="email" required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-1" />
+        </div>
+
+        <!-- Skills -->
+        <div>
+            <x-input-label for="skills" value="Keahlian (Skills)" class="text-xs font-bold text-gray-700" />
+            <x-text-input wire:model="skills" id="skills" class="block mt-1 w-full rounded-xl border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 text-sm" type="text" name="skills" placeholder="Contoh: PHP, Desain Grafis, Manajemen" autocomplete="off" />
+            <p class="mt-1 text-[10px] text-gray-500">Pisahkan dengan koma. Opsional, namun berguna untuk rekomendasi lowongan kerja.</p>
+            <x-input-error :messages="$errors->get('skills')" class="mt-1" />
         </div>
 
         <!-- Password -->

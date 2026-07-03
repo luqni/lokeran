@@ -39,20 +39,18 @@
                         MP
                     </div>
                     <h1 class="text-lg md:text-xl font-bold text-gray-900 tracking-tight whitespace-nowrap">Loker Merah Putih</h1>
-                    
-                    <!-- Hermes Status Indicator -->
-                    <div class="flex items-center gap-1.5 bg-gray-50 border border-gray-100 rounded-full px-2 py-0.5 transition-all duration-300 flex-shrink-0" title="Hermes Agent">
-                        <span class="relative flex h-2 w-2">
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                        </span>
-                        <span class="text-[9px] font-extrabold tracking-wider uppercase text-green-600">
-                            <span class="hidden sm:inline">di tenagai oleh </span>Hermes AI
-                        </span>
-                    </div>
                 </div>
 
-                <!-- Right: Saved Filter & Auth Links -->
                 <div class="flex items-center gap-3">
+                    <!-- Notification Bell -->
+                    @auth
+                    <button onclick="subscribeToPushNotifications()" class="relative p-2 transition-colors text-gray-400 hover:text-amber-500" title="Aktifkan Notifikasi Loker Baru">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                    </button>
+                    @endauth
+
                     <!-- Saved Filter -->
                     <button wire:click="toggleSavedFilter" class="relative p-2 transition-colors {{ $showSavedOnly ? 'text-red-600' : 'text-gray-400 hover:text-gray-500' }}" title="Saved Jobs">
                         <svg class="w-6 h-6 {{ $showSavedOnly ? 'fill-red-600 text-red-600' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -138,6 +136,21 @@
                             <option value="Past Week">Past Week</option>
                             <option value="Past Month">Past Month</option>
                         </select>
+
+                        <select x-show="!searchFocused" wire:model.live="salaryFilter" class="flex-shrink-0 h-full py-0 pl-3 pr-8 rounded-full border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 text-xs sm:text-sm text-gray-600 bg-white cursor-pointer w-auto transition-all">
+                            <option value="All">Semua Gaji</option>
+                            <option value="< 3 Juta">< 3 Juta</option>
+                            <option value="3 - 5 Juta">3 - 5 Juta</option>
+                            <option value="5 - 10 Juta">5 - 10 Juta</option>
+                            <option value="> 10 Juta">> 10 Juta</option>
+                        </select>
+
+                        @auth
+                            <label x-show="!searchFocused" class="flex items-center gap-2 flex-shrink-0 h-full py-1.5 pl-3 pr-4 rounded-full border shadow-sm cursor-pointer transition-all text-xs sm:text-sm" :class="$wire.matchSkills ? 'bg-red-50 border-red-300 text-red-700' : 'bg-white border-gray-300 text-gray-600'">
+                                <input type="checkbox" wire:model.live="matchSkills" class="rounded text-red-600 focus:ring-red-500 border-gray-300">
+                                <span class="font-medium whitespace-nowrap">Sesuai Skill Saya</span>
+                            </label>
+                        @endauth
                     </div>
 
                     <!-- Right Arrow Button (Desktop Only) -->

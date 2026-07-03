@@ -8,6 +8,28 @@ class JobListing extends Model
 {
     protected $guarded = [];
 
+    protected static function booted()
+    {
+        static::created(function ($job) {
+            $users = \App\Models\User::whereNotNull('skills')->get();
+            $usersToNotify = collect();
+            
+            foreach ($users as $user) {
+                $skills = array_filter(array_map('trim', explode(',', $user->skills)));
+                foreach ($skills as $skill) {
+                    if (stripos($job->job_title, $skill) !== false || stripos((string)$job->requirements, $skill) !== false) {
+                        $usersToNotify->push($user);
+                        break;
+                    }
+                }
+            }
+
+            if ($usersToNotify->isNotEmpty()) {
+                \Illuminate\Support\Facades\Notification::send($usersToNotify, new \App\Notifications\NewJobNotification($job));
+            }
+        });
+    }
+
     protected function casts(): array
     {
         return [

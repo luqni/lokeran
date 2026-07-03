@@ -7,6 +7,11 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
+        <!-- PWA Meta Tags -->
+        <meta name="theme-color" content="#dc2626">
+        <link rel="manifest" href="/manifest.json">
+        <link rel="apple-touch-icon" href="/favicon.svg">
+
         <!-- Favicon -->
         <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 
@@ -39,5 +44,64 @@
                 {{ $slot }}
             </main>
         </div>
+        
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    }, function(err) {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+                });
+            }
+
+            function subscribeToPushNotifications() {
+                if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                    alert('Push notifications are not supported by your browser.');
+                    return;
+                }
+
+                navigator.serviceWorker.ready.then(function(registration) {
+                    const vapidPublicKey = "{{ config('webpush.vapid.public_key') }}";
+                    if (!vapidPublicKey) {
+                        console.error('VAPID_PUBLIC_KEY is missing');
+                        return;
+                    }
+
+                    const urlBase64ToUint8Array = (base64String) => {
+                        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+                        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+                        const rawData = window.atob(base64);
+                        const outputArray = new Uint8Array(rawData.length);
+                        for (let i = 0; i < rawData.length; ++i) {
+                            outputArray[i] = rawData.charCodeAt(i);
+                        }
+                        return outputArray;
+                    };
+
+                    registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
+                    }).then(function(subscription) {
+                        fetch('/push-subscribe', {
+                            method: 'POST',
+                            body: JSON.stringify(subscription),
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            }
+                        }).then(response => {
+                            if (response.ok) alert('Notifikasi berhasil diaktifkan!');
+                        });
+                    }).catch(function(err) {
+                        console.log('Failed to subscribe the user: ', err);
+                    });
+                });
+            }
+        </script>
+        
+        <x-pwa-prompt />
     </body>
 </html>

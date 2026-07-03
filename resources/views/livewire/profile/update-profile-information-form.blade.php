@@ -10,6 +10,7 @@ new class extends Component
 {
     public string $name = '';
     public string $email = '';
+    public string $skills = '';
 
     /**
      * Mount the component.
@@ -18,6 +19,7 @@ new class extends Component
     {
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
+        $this->skills = Auth::user()->skills ?? '';
     }
 
     /**
@@ -30,6 +32,7 @@ new class extends Component
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'skills' => ['nullable', 'string', 'max:1000'],
         ]);
 
         $user->fill($validated);
@@ -113,6 +116,13 @@ new class extends Component
                 </div>
             @endif
 
+        </div>
+
+        <div>
+            <x-input-label for="skills" value="Keahlian (Skills)" />
+            <x-text-input wire:model="skills" id="skills" name="skills" type="text" class="mt-1 block w-full" placeholder="Contoh: PHP, Desain Grafis, Manajemen" autocomplete="off" />
+            <p class="mt-1 text-xs text-gray-500">Masukkan keahlian Anda dipisahkan dengan koma untuk mendapatkan rekomendasi lowongan yang sesuai.</p>
+            <x-input-error class="mt-2" :messages="$errors->get('skills')" />
         </div>
 
         <div class="flex items-center gap-4">

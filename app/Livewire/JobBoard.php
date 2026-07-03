@@ -17,6 +17,8 @@ class JobBoard extends Component
     public $dateFilter = 'All';
     public $provinceFilter = 'All';
     public $ageFilter = 'All';
+    public $salaryFilter = 'All';
+    public $matchSkills = false;
     public $selectedJob = null;
     public $perPage = 10;
     public $showSavedOnly = false;
@@ -83,6 +85,18 @@ class JobBoard extends Component
         $this->resetNotification();
     }
 
+    public function updatedSalaryFilter()
+    {
+        $this->perPage = 10;
+        $this->resetNotification();
+    }
+
+    public function updatedMatchSkills()
+    {
+        $this->perPage = 10;
+        $this->resetNotification();
+    }
+
     public function checkForNewJobs()
     {
         if ($this->showSavedOnly) {
@@ -107,6 +121,8 @@ class JobBoard extends Component
         $this->dateFilter = 'All';
         $this->provinceFilter = 'All';
         $this->ageFilter = 'All';
+        $this->salaryFilter = 'All';
+        $this->matchSkills = false;
         $this->selectedPlatform = null;
         $this->showSavedOnly = false;
         
@@ -195,6 +211,40 @@ class JobBoard extends Component
                     });
                 });
             })
+            ->when($this->salaryFilter !== 'All', function ($query) {
+                if ($this->salaryFilter === '< 3 Juta') {
+                    $query->where(function ($q) {
+                        $q->where('min_salary', '<=', 3000000)
+                          ->orWhere('max_salary', '<=', 3000000);
+                    });
+                } elseif ($this->salaryFilter === '3 - 5 Juta') {
+                    $query->where(function ($q) {
+                        $q->whereBetween('min_salary', [3000000, 5000000])
+                          ->orWhereBetween('max_salary', [3000000, 5000000]);
+                    });
+                } elseif ($this->salaryFilter === '5 - 10 Juta') {
+                    $query->where(function ($q) {
+                        $q->whereBetween('min_salary', [5000000, 10000000])
+                          ->orWhereBetween('max_salary', [5000000, 10000000]);
+                    });
+                } elseif ($this->salaryFilter === '> 10 Juta') {
+                    $query->where(function ($q) {
+                        $q->where('min_salary', '>=', 10000000)
+                          ->orWhere('max_salary', '>=', 10000000);
+                    });
+                }
+            })
+            ->when($this->matchSkills && auth()->check() && auth()->user()->skills, function ($query) {
+                $skills = array_filter(array_map('trim', explode(',', auth()->user()->skills)));
+                if (!empty($skills)) {
+                    $query->where(function ($q) use ($skills) {
+                        foreach ($skills as $skill) {
+                            $q->orWhere('job_title', 'ilike', '%' . $skill . '%')
+                              ->orWhereRaw("requirements::text ilike ?", ['%' . $skill . '%']);
+                        }
+                    });
+                }
+            })
             ->when($this->dateFilter !== 'All', function ($query) {
                 if ($this->dateFilter === 'Past 24 Hours') {
                     $query->where('created_at', '>=', now()->subDay());
@@ -244,6 +294,40 @@ class JobBoard extends Component
                             ->orWhere('max_age', '>=', $this->ageFilter);
                     });
                 });
+            })
+            ->when($this->salaryFilter !== 'All', function ($query) {
+                if ($this->salaryFilter === '< 3 Juta') {
+                    $query->where(function ($q) {
+                        $q->where('min_salary', '<=', 3000000)
+                          ->orWhere('max_salary', '<=', 3000000);
+                    });
+                } elseif ($this->salaryFilter === '3 - 5 Juta') {
+                    $query->where(function ($q) {
+                        $q->whereBetween('min_salary', [3000000, 5000000])
+                          ->orWhereBetween('max_salary', [3000000, 5000000]);
+                    });
+                } elseif ($this->salaryFilter === '5 - 10 Juta') {
+                    $query->where(function ($q) {
+                        $q->whereBetween('min_salary', [5000000, 10000000])
+                          ->orWhereBetween('max_salary', [5000000, 10000000]);
+                    });
+                } elseif ($this->salaryFilter === '> 10 Juta') {
+                    $query->where(function ($q) {
+                        $q->where('min_salary', '>=', 10000000)
+                          ->orWhere('max_salary', '>=', 10000000);
+                    });
+                }
+            })
+            ->when($this->matchSkills && auth()->check() && auth()->user()->skills, function ($query) {
+                $skills = array_filter(array_map('trim', explode(',', auth()->user()->skills)));
+                if (!empty($skills)) {
+                    $query->where(function ($q) use ($skills) {
+                        foreach ($skills as $skill) {
+                            $q->orWhere('job_title', 'ilike', '%' . $skill . '%')
+                              ->orWhereRaw("requirements::text ilike ?", ['%' . $skill . '%']);
+                        }
+                    });
+                }
             })
             ->when($this->dateFilter !== 'All', function ($query) {
                 if ($this->dateFilter === 'Past 24 Hours') {

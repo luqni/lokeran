@@ -28,15 +28,6 @@ new class extends Component
                 </div>
                 <h1 class="text-xl font-bold text-gray-900 tracking-tight whitespace-nowrap">Loker Merah Putih</h1>
             </a>
-            <!-- Hermes Status (Static on Profile) -->
-            <div class="flex items-center gap-1.5 ml-1 sm:ml-2 bg-gray-50 border border-gray-100 rounded-full px-2 py-0.5 transition-all duration-300" title="Hermes Agent">
-                <span class="relative flex h-2 w-2">
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                </span>
-                <span class="text-[9px] font-extrabold tracking-wider uppercase text-green-600">
-                    <span class="hidden sm:inline">di tenagai oleh </span>Hermes AI
-                </span>
-            </div>
         </div>
 
         <!-- Right: Auth Links -->
