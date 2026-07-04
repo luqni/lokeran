@@ -14,3 +14,6 @@ Artisan::command('inspire', function () {
 
 // Jadwalkan pembersihan data duplikat setiap hari (tengah malam)
 // Schedule::command('jobs:remove-duplicates')->daily();
+
+// Jadwalkan pembersihan data error (misal: ekstraksi AI gagal) setiap hari
+Schedule::command('jobs:cleanup-failed')->daily();
