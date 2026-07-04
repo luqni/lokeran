@@ -96,7 +96,18 @@
                             if (response.ok) alert('Notifikasi berhasil diaktifkan!');
                         });
                     }).catch(function(err) {
-                        console.log('Failed to subscribe the user: ', err);
+                        if (err.name === 'InvalidStateError' || (err.message && err.message.includes('applicationServerKey'))) {
+                            console.warn('Subscription key mismatch, unsubscribing and retrying...');
+                            registration.pushManager.getSubscription().then(function(subscription) {
+                                if (subscription) {
+                                    subscription.unsubscribe().then(function() {
+                                        subscribeToPushNotifications();
+                                    });
+                                }
+                            });
+                        } else {
+                            console.log('Failed to subscribe the user: ', err);
+                        }
                     });
                 });
             }

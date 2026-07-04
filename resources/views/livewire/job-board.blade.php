@@ -15,16 +15,26 @@
 " class="min-h-screen bg-gray-50 flex flex-col font-sans" wire:poll.15s="checkForNewJobs">
     
     <!-- Global Fullscreen Loader -->
-    <div wire:loading.flex wire:target="locationFilter, dateFilter, searchQuery, selectPlatform, toggleSavedFilter, selectJob, showNewJobs" class="fixed inset-0 z-[100] bg-white/80 backdrop-blur-sm flex-col items-center justify-center transition-all duration-300">
-        <div class="flex flex-col items-center justify-center gap-4">
-            <div class="relative w-16 h-16 flex items-center justify-center">
-                <div class="absolute inset-0 bg-red-500 rounded-2xl opacity-20 animate-ping" style="animation-duration: 1.5s;"></div>
-                <div class="relative w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center text-white font-extrabold text-3xl shadow-xl shadow-red-500/40 animate-bounce">
-                    MP
+    <div wire:loading.flex wire:target="locationFilter, dateFilter, searchQuery, selectPlatform, toggleSavedFilter, selectJob, showNewJobs" class="fixed inset-0 z-[100] bg-white/70 backdrop-blur-md flex-col items-center justify-center transition-all duration-300">
+        <div class="flex flex-col items-center justify-center gap-6 p-8 rounded-3xl bg-white/50 shadow-2xl shadow-red-500/5 ring-1 ring-black/5">
+            <div class="relative w-20 h-20 flex items-center justify-center">
+                <!-- Spinning outer ring -->
+                <div class="absolute inset-0 rounded-full border-4 border-red-50 border-t-red-600 border-r-red-600 animate-spin" style="animation-duration: 1s;"></div>
+                
+                <!-- Inner Logo -->
+                <div class="w-14 h-14 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center shadow-lg shadow-red-600/30">
+                    <span class="text-white font-black text-xl tracking-tight">MP</span>
                 </div>
-                <h1 class="text-xl font-bold text-gray-900 tracking-tight hidden sm:block">Loker Merah Putih</h1>
             </div>
-            <span class="text-sm font-bold text-red-600 animate-pulse tracking-widest uppercase">Sedang Mencari...</span>
+            
+            <div class="flex flex-col items-center gap-2">
+                <h2 class="text-lg font-black text-gray-900 tracking-tight">Loker Merah Putih</h2>
+                <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-red-600 animate-bounce" style="animation-delay: -0.3s"></span>
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-bounce" style="animation-delay: -0.15s"></span>
+                    <span class="w-2 h-2 rounded-full bg-red-400 animate-bounce"></span>
+                </div>
+            </div>
         </div>
     </div>
 
